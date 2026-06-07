@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this Lean formalization, please cite it as below."
+title: "Lean 4 companion formalization for Erdős Problem 887"
+version: "1.0.0"
+type: software
+authors:
+  - family-names: "Koch"
+    given-names: "Jarek"
+date-released: 2026-06-07
+license: "MIT"
+abstract: "Lean 4 companion formalization for a paper on Erdős Problem 887."
+keywords:
+  - Lean 4
+  - formalization
+  - number theory
+  - Erdős Problem 887

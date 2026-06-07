@@ -1,0 +1,17 @@
+# Lean / Lake build outputs
+.lake/
+.build/
+*.olean
+*.ilean
+*.c
+*.o
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Temporary files
+*.tmp
+*.bak
+~$*
