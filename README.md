@@ -6,7 +6,6 @@ This repository contains the Lean 4 companion formalization for Jarek Koch's man
 
 Paper DOI: `10.5281/zenodo.20651083`
 All-versions paper DOI: `10.5281/zenodo.20651082`
-
 Archived Lean release DOI: `10.5281/zenodo.20586442`
 
 ## Project purpose
@@ -30,6 +29,12 @@ The formalization mirrors the paper's theorem-source architecture. It includes t
 
 * `Erdos887.lean`
   Root import file.
+
+* `Main.lean`
+  Project entry file.
+
+* `Lean_Audit.tsv`
+  Human-readable audit map for the formalization. GitHub renders this file as a table. It lists the main formal packages, their fields or constructors, and their paper-section anchors so readers can inspect the structure of the Lean development without spreadsheet software.
 
 * `lakefile.toml`
   Lake project configuration.
@@ -68,6 +73,32 @@ Related theorem-surface declarations include:
 ```lean
 Erdos887Formal.Paper_Theorem_1_1_Final
 Erdos887Formal.canonicalOverloadReconstruction_of_externalExtraction
+```
+
+## Human audit map
+
+The file
+
+```text
+Lean_Audit.tsv
+```
+
+is provided as a navigation aid for reviewers and readers. It is a plain tab-separated table, so it can be viewed directly on GitHub, opened in spreadsheet software, or inspected as text.
+
+The audit map is intended to show what is packaged inside the formalization: structures, theorem-source packages, retained-state records, fields, constructors, and their corresponding paper-section anchors. It is not a separate proof and does not replace Lean checking. The authoritative formal artifact remains:
+
+```text
+Erdos887/Formalization.lean
+```
+
+A suggested audit path is:
+
+```text
+1. Build the project with lake build.
+2. Inspect the public endpoint declarations.
+3. Use Lean_Audit.tsv to locate the major theorem-source packages.
+4. Compare those packages with the corresponding sections of the manuscript.
+5. Follow the final route from external reconstruction to the canonical interval-overload obstruction.
 ```
 
 ## Artifact links
@@ -117,4 +148,4 @@ external infinite five-divisor violations
 → contradiction
 ```
 
-The manuscript explains the mathematical meaning of the source components and retained-state handoffs. The Lean file provides the corresponding machine-checkable theorem surface.
+The manuscript explains the mathematical meaning of the source components and retained-state handoffs. The Lean file provides the corresponding machine-checkable theorem surface. The audit map gives readers a compact way to navigate the formal package structure while keeping the Lean file itself as the source of truth.
