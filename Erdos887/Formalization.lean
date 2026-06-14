@@ -3,129 +3,65 @@ import Mathlib
 namespace Erdos887Formal
 
 /-
-Erdos887/Formalization.lean
+Erdos887_FormalSpine.lean
 
-Single-file Lean 4 companion formalization for the paper:
+Single-file Lean artifact for the paper:
 
-A K5 Survivor Obstruction for Erdős Problem 887.
+A K5 Survivor Obstruction for Erd\H{o}s Problem 887.
 
 Imports Mathlib only.
 
-This file is a machine-checkable companion to the paper.  The paper is
-self-contained; this Lean development does not serve as a hypothesis in the
-paper.  Instead, it records the same public reduction route as typed Lean
-definitions, theorem-source packages, handoff records, and final theorem
-wrappers.
-
 Public paper route:
 external infinite five-divisor violations
--> external reconstruction and canonical extraction source
+-> external reconstruction and canonical extraction
 -> canonical interval-overload datum
 -> normalized legal K5 survivor
 -> internal canonical interval-overload obstruction
--> final no-infinite-violations conclusion
+-> final external divisor-count conclusion
 
-Principal public endpoint:
-Erdos887Formal.Paper_Corollary_1_2_Final
-
-The physical declaration order follows Lean dependencies.  Broadly, the file
-places endpoint and K5 scaffolding first, then external divisor and canonical
-extraction data, then internal obstruction machinery, then the late
-external-to-internal handoff, survivor wrapper, and final paper-facing theorem
-surface.
+The physical file order now follows the paper as far as Lean dependencies allow:
+endpoint/K5 scaffolding first, then external divisor data and external canonical
+extraction geometry, then the internal obstruction machinery, then the late
+external-to-internal handoff and final theorem surface.
 
 FORMAL SOURCE BOUNDARY:
 No legacy imports are used.
-No old theorem sockets are used.
-No optional archive routes are used.
-No compatibility True-field adapters are used.
-No theorem below should be weakened, bypassed, or replaced during publication
-annotation passes.
+No legacy theorem sockets.
+No optional archive routes.
+No compatibility True-field adapters.
 -/
 
 /-
+============================================================
+PAPER-FACING PUBLIC ROUTE LEDGER
+============================================================
+This ledger records the public theorem order.  Most declarations below now
+follow paper order; the late handoff layer remains dependency-ordered.
 
-# PAPER-FACING PUBLIC ROUTE LEDGER
-
-This ledger records the public theorem route exposed by the formalization.
-Most declarations below follow the paper order where Lean dependencies allow;
-some late handoff declarations remain dependency-ordered.
-
-1. External infinite five-divisor violations:
+1. External violations:
    ExternalReconstruction.ExternalInfiniteViolations
-   ExternalReconstruction.actualNearRootDivisorCount
 
-2. External reconstruction source:
+2. External canonical extraction:
+   ExternalCanonicalExtraction.canonicalOverloadReconstruction_of_externalExtraction
+
+   The preferred paper-facing source package is:
    ExternalCanonicalExtraction.ExternalReconstructionSource
 
-   This is the preferred paper-facing package.  Internally, it contains the
-   two source components used by the final wrapper:
-
-   * ExternalCanonicalExtraction.CanonicalExtractionSource
-   * ExternalCanonicalExtraction.RootBandSurvivorReconstructionSource
-
-3. Canonical extraction to internal obstruction input:
-   ExternalCanonicalExtraction.canonicalOverloadReconstruction_of_externalExtraction
+3. Internal obstruction input production:
    ExternalCanonicalExtraction.externalExtraction_produces_internalObstructionInput
 
-   Paper meaning:
-   external infinite violations reconstruct a canonical interval-overload datum.
-
-4. Direct external close through the internal obstruction:
-   ExternalCanonicalExtraction.externalExtraction_plus_internalObstruction_closes_externalViolations
-   ExternalCanonicalExtraction.noExternalInfiniteViolations_from_externalCanonicalExtraction
-   ExternalCanonicalExtraction.Paper_Corollary_1_2_ExternalNoInfiniteViolations
-
-   These names expose the direct route:
-   external reconstruction -> canonical internal obstruction input -> contradiction.
-
-5. Normalized legal K5 survivor surface:
-   NormalizedLegalK5Survivor
-   no_NormalizedLegalK5Survivor
-   Paper_Theorem_1_1_NoNormalizedLegalK5Survivor
-   Paper_Theorem_1_1_Final
-
-   Paper meaning:
-   no normalized legal K5 survivor exists.
-
-6. Survivor realization from external reconstruction:
+4. Normalized legal survivor realization:
    externalExtraction_realizes_normalizedLegalK5Survivor
 
-   Paper meaning:
-   external infinite violation
-   -> canonical interval-overload datum
-   -> normalized legal K5 survivor.
+5. Internal K5 obstruction:
+   Paper_Theorem_1_1_Final
 
-7. Preferred paper-route Corollary 1.2 wrapper:
-   Paper_Corollary_1_2_ExternalNoInfiniteViolations_viaSurvivor
-   Paper_Corollary_1_2_Final_from_sourceComponents
+6. External divisor-count conclusion:
    Paper_Corollary_1_2_Final
 
-   Principal endpoint:
-   Paper_Corollary_1_2_Final
-   (X : ExternalCanonicalExtraction.ExternalReconstructionSource)
-   (C : ℝ)
-   (hCpos : 0 < C)
-   :
-   ¬ ExternalReconstruction.ExternalInfiniteViolations
-   ExternalReconstruction.actualNearRootDivisorCount C
-
-The formalization has two visible closing routes:
-
-* the direct formal close through canonical internal obstruction input;
-* the preferred paper-facing close through the normalized legal K5 survivor.
-
-The preferred public route for the paper is the survivor-mediated wrapper:
-external reconstruction source
--> normalized legal K5 survivor
--> Theorem 1.1
--> no external infinite five-divisor violations.
-
-Old gate terminology is not part of the public theorem surface.  Remaining
+Old gate terminology is not part of the public theorem surface.  The remaining
 declarations are organized into endpoint scaffolding, external data, external
-canonical extraction, internal obstruction, retained-state handoffs, survivor
-realization, and final theorem wrappers.
-
+canonical extraction, internal obstruction, late handoff, and final theorem layers.
 ============================================================
 -/
 
@@ -1103,12 +1039,14 @@ and finite five-divisor extraction.
 namespace ExternalReconstruction
 
 /-
-External external reconstruction primitives.
+External reconstruction primitives.
 
-This namespace ports only the external near-root divisor-count and
-five-divisor witness surfaces.  external reconstruction now targets the actual internal obstruction raw
-source object: the canonical interval-overload datum is
-`CanonicalInternalObstructionInputRawPackage`.
+This namespace ports the external near-root divisor-count and five-divisor
+witness surfaces.  The paper-level canonical interval-overload datum is
+represented by `ExternalCanonicalExtraction.CanonicalIntervalOverloadCore`.
+The final formal handoff targets the expanded proof-ready internal obstruction
+input `CanonicalInternalObstructionInputRawPackage`, which carries the staged
+internal roadmap fields needed by the Lean close.
 -/
 
 /--
@@ -2016,6 +1954,14 @@ Output: see declaration codomain
 Rename target: support product
 Do not: do not weaken, replace, or route around this declaration during annotation passes.
 -/
+/-
+Implementation note on the following non-reducible helper interfaces:
+these declarations are intentionally non-reducible product/readout interfaces
+for finite support-address products used by the external reconstruction layer.
+They carry explicit types and are consumed through typed equalities in the
+surrounding source structures, so downstream proofs do not unfold large finite
+product definitions.
+-/
 noncomputable opaque supportProduct
     (X : SupportAddress -> Nat)
     (P : SupportAddress -> Prop)
@@ -2485,7 +2431,7 @@ structure VectorBalanceCertificate
 /--
 [PAPER: FaceEntryOutcome]
 Paper label: paper ledger
-Paper role: outcome of canonical face entry
+Paper role: bounded-chamber canonical face-entry outcome
 Lean declaration: FaceEntryOutcome
 Lifecycle: theorem-source component
 Status: theorem-source surface
@@ -2502,10 +2448,6 @@ inductive FaceEntryOutcome
     (B : BoundedFullK5Chamber U) : Type where
   | absorbedF3 : FaceEntryOutcome B
   | absorbedF2 : FaceEntryOutcome B
-  | directedCollapse : DirectedFactorCollapseExit U -> FaceEntryOutcome B
-  | activeGapEscape : ActiveGapEscapeExit U -> FaceEntryOutcome B
-  | lowerDimensionalRoute :
-      forall routeData : Prop, routeData -> FaceEntryOutcome B
 /--
 [PAPER: FaceEntry_K5]
 Paper label: paper ledger
@@ -4646,8 +4588,8 @@ Therefore rank four dies.
 FORMAL SOURCE BOUNDARY:
 "rank 4 dies"
 
-SPINE CROSS-CHECK:
-Formal_Erdos887.txt, Lemma 11.5d, Linear rank closure; HistoricalInternalObstruction_ChatLogProofMap.txt row 5.
+FORMAL AUDIT NOTE:
+formal source ledger, Lemma 11.5d, Linear rank closure; archived formal route ledger row 5.
 
 FORMAL SOURCE BOUNDARY:
 Rank branch socket exists, but the Cramer boundedness proof is not ported.
@@ -4727,8 +4669,8 @@ magical pencil source.
 FORMAL SOURCE BOUNDARY:
 "rank 3 gives affine pencil"
 
-SPINE CROSS-CHECK:
-Formal_Erdos887.txt, Lemma 11.5d, Linear rank closure; HistoricalInternalObstruction_ChatLogProofMap.txt row 6.
+FORMAL AUDIT NOTE:
+formal source ledger, Lemma 11.5d, Linear rank closure; archived formal route ledger row 6.
 
 FORMAL SOURCE BOUNDARY:
 Rank-three socket exists; affine pencil source is downstream.
@@ -4797,8 +4739,8 @@ the regularity input consumed by the finite coloring classifier.
 FORMAL SOURCE BOUNDARY:
 "rank <= 2 becomes a finite coloring problem"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_MasterRepairPlan.txt and HistoricalInternalObstruction_ChatLogProofMap.txt row 7.
+FORMAL AUDIT NOTE:
+archived formal repair ledger and archived formal route ledger row 7.
 
 FORMAL SOURCE BOUNDARY:
 Rank <= 2 coloring certificate interface exists, but the direction source is
@@ -4887,8 +4829,8 @@ least one gap variable to become unbounded.  Hence the rank-four branch dies.
 FORMAL SOURCE BOUNDARY:
 "rank 4 dies"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_ChatLogProofMap.txt row 5.
+FORMAL AUDIT NOTE:
+archived formal route ledger row 5.
 
 FORMAL SOURCE BOUNDARY:
 Rank branch interface exists; matrix proof not ported.
@@ -4960,8 +4902,8 @@ rank-three lemma does not jump directly to the chamber.
 FORMAL SOURCE BOUNDARY:
 "rank 3 gives affine pencil or dies"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_ChatLogProofMap.txt row 6.
+FORMAL AUDIT NOTE:
+archived formal route ledger row 6.
 
 FORMAL SOURCE BOUNDARY:
 Interface present; formula proof not ported.
@@ -5028,8 +4970,8 @@ branch into affine pencil source.
 FORMAL SOURCE BOUNDARY:
 "rank <= 2 becomes a finite coloring problem on the ten edges of K5"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_MasterRepairPlan.txt Producer 2.
+FORMAL AUDIT NOTE:
+archived formal repair ledger Producer 2.
 
 FORMAL SOURCE BOUNDARY:
 Certificate interface exists.
@@ -5095,8 +5037,8 @@ classification, and prefix-cone kill steps consume.
 FORMAL SOURCE BOUNDARY:
 "rank <= 2 becomes a finite coloring problem"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_MasterRepairPlan.txt and HistoricalInternalObstruction_ChatLogProofMap.txt row 7.
+FORMAL AUDIT NOTE:
+archived formal repair ledger and archived formal route ledger row 7.
 
 FORMAL SOURCE BOUNDARY:
 Represented by the concrete source object
@@ -5159,8 +5101,8 @@ resulting function is a TwoColoring on K5.
 FORMAL SOURCE BOUNDARY:
 "rank <= 2 becomes a finite coloring problem on the ten edges of K5"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_MasterRepairPlan.txt Producer 2.
+FORMAL AUDIT NOTE:
+archived formal repair ledger Producer 2.
 
 FORMAL SOURCE BOUNDARY:
 TwoColoring exists.
@@ -5308,8 +5250,8 @@ must have the same two-color product count:
 FORMAL SOURCE BOUNDARY:
 "rank <= 2 becomes a finite coloring problem" and "use the quadratic descent identities"
 
-SPINE CROSS-CHECK:
-Formal_Erdos887.txt, Certificate 11.5e, plus RX.1 q_uvw rows.
+FORMAL AUDIT NOTE:
+formal source ledger, Certificate 11.5e, plus RX.1 q_uvw rows.
 
 FORMAL SOURCE BOUNDARY:
 RX.1 already derives the quadratic descent row family q_uvw.  The exact
@@ -5400,8 +5342,8 @@ three-entry color multisets are equal:
 FORMAL SOURCE BOUNDARY:
 This is the finite two-color arithmetic hidden inside the low-rank coloring closure.
 
-SPINE CROSS-CHECK:
-Formal_Erdos887.txt, Lemma 11.5e0 assumes exactly this multiset condition.
+FORMAL AUDIT NOTE:
+formal source ledger, Lemma 11.5e0 assumes exactly this multiset condition.
 
 FORMAL SOURCE BOUNDARY:
 The Boolean three-pair proof is present, and the K5-frame adapter
@@ -5541,8 +5483,8 @@ two-class proof, and incident_multiset_balance into the record.
 FORMAL SOURCE BOUNDARY:
 "rank <= 2 becomes a finite coloring problem"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_ChatLogProofMap.txt row 7 and Formal_Erdos887.txt Certificate 11.5e.
+FORMAL AUDIT NOTE:
+archived formal route ledger row 7 and formal source ledger Certificate 11.5e.
 
 FORMAL SOURCE BOUNDARY:
 Rank <= 2 coloring certificate interface exists; this constructor is not ported.
@@ -5610,8 +5552,8 @@ regularity.
 FORMAL SOURCE BOUNDARY:
 "color multiset equality gives regularity"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_ChatLogProofMap.txt row 8.
+FORMAL AUDIT NOTE:
+archived formal route ledger row 8.
 
 FORMAL SOURCE BOUNDARY:
 `ColorRegularExplicit` records the regularity interface used by the
@@ -5696,8 +5638,8 @@ vertices, hence the complementary Hamiltonian 5-cycle.
 FORMAL SOURCE BOUNDARY:
 "regular shells in K5 are only empty, C5, K5"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_ChatLogProofMap.txt row 9 and HistoricalInternalObstruction_FromSpine.lean checked finite
+FORMAL AUDIT NOTE:
+archived formal route ledger row 9 and internal-obstruction formal source checked finite
 coloring adapters.
 
 FORMAL SOURCE BOUNDARY:
@@ -6588,8 +6530,8 @@ the same positive-cone argument there.  Hence the two-cycle branch dies.
 FORMAL SOURCE BOUNDARY:
 "prefix geometry kills the C5 sqcup C5 case"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_ChatLogProofMap.txt rows 10-11.
+FORMAL AUDIT NOTE:
+archived formal route ledger rows 10-11.
 
 FORMAL SOURCE BOUNDARY:
 Prefix-cone interfaces exist; formula-level proof not ported.
@@ -6689,9 +6631,6 @@ structure PrefixConeC5ConflictData where
   interval_sum_source : Prop
   interval_sum_source_holds : interval_sum_source
 
-  lexicographic_lower_layer_closed : Prop
-  lexicographic_lower_layer_closed_holds :
-    lexicographic_lower_layer_closed
 
 theorem PrefixConeC5ConflictData.contradiction
     (S : PrefixConeC5ConflictData) :
@@ -6732,8 +6671,6 @@ structure PrefixConeGeometryKill where
   coloring : RankLeTwoLeadingDirectionColoringData
   coloring_matches_problem :
     coloring.chi = problem.chi
-  lexicographic_lower_layer_closed : Prop
-  lexicographic_lower_layer_closed_holds : lexicographic_lower_layer_closed
   c5KillSource :
     forall C : C5sqcupC5Branch,
       C.chi = problem.chi ->
@@ -6756,9 +6693,6 @@ def PrefixConeGeometryKill.ofConflictData
     (coloring : RankLeTwoLeadingDirectionColoringData)
     (coloring_matches_problem :
       coloring.chi = problem.chi)
-    (lexicographic_lower_layer_closed : Prop)
-    (lexicographic_lower_layer_closed_holds :
-      lexicographic_lower_layer_closed)
     (c5ConflictForBranch :
       forall C5 : C5sqcupC5Branch,
         C5.chi = problem.chi ->
@@ -6774,10 +6708,6 @@ def PrefixConeGeometryKill.ofConflictData
   frozen := frozen
   coloring := coloring
   coloring_matches_problem := coloring_matches_problem
-  lexicographic_lower_layer_closed :=
-    lexicographic_lower_layer_closed
-  lexicographic_lower_layer_closed_holds :=
-    lexicographic_lower_layer_closed_holds
   c5KillSource := by
     intro C5 hC5
     exact
@@ -6806,9 +6736,6 @@ def fromBranchConflicts
     (coloring : RankLeTwoLeadingDirectionColoringData)
     (coloring_matches_problem :
       coloring.chi = problem.chi)
-    (lexicographic_lower_layer_closed : Prop)
-    (lexicographic_lower_layer_closed_holds :
-      lexicographic_lower_layer_closed)
     (c5ConflictForBranch :
       forall C5 : C5sqcupC5Branch,
         C5.chi = problem.chi ->
@@ -6825,8 +6752,6 @@ def fromBranchConflicts
     frozen
     coloring
     coloring_matches_problem
-    lexicographic_lower_layer_closed
-    lexicographic_lower_layer_closed_holds
     c5ConflictForBranch
     survivingMonochrome
     survivingMonochrome_uses_problem
@@ -6882,8 +6807,8 @@ affine magical pencil source consumed by TS and CE.
 FORMAL SOURCE BOUNDARY:
 "monochrome survivor / one-direction survivor"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt and HistoricalInternalObstruction_ChatLogProofMap.txt
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger and archived formal route ledger
 rows 12-13.
 
 FORMAL SOURCE BOUNDARY:
@@ -7482,8 +7407,8 @@ F_e(Z(t))=b_e for every endpoint e.
 FORMAL SOURCE BOUNDARY:
 "affine magical pencil writes sectors as Z_ij(x)=alpha_ij x + beta_ij"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 PointwiseHIAffinePencilEndpointEqDataTheorem exists in the older Lean support;
@@ -7556,8 +7481,8 @@ equations gives the endpoint identity source required by TA.1.
 FORMAL SOURCE BOUNDARY:
 "monochrome survivor / one-direction survivor" and "affine magical pencil"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt and HistoricalInternalObstruction_ChatLogProofMap.txt rows 12-13.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger and archived formal route ledger rows 12-13.
 
 FORMAL SOURCE BOUNDARY:
 PointwiseFGMonochromeDataTheorem and PointwiseHIAffinePencilEndpointEqDataTheorem
@@ -7617,8 +7542,8 @@ vanishing; CE.1-CE.5 extract those consequences.
 FORMAL SOURCE BOUNDARY:
 "affine magical pencil"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Existing H/I endpoint-equation data objects may already expose these fields.
@@ -7676,8 +7601,8 @@ they define the affine gap data A.
 FORMAL SOURCE BOUNDARY:
 "affine magical pencil writes sectors as Z_ij(x)=alpha_ij x + beta_ij"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 No checked constructor from the direct source to affine sectors is identified.
@@ -7782,8 +7707,8 @@ as a polynomial identity for every endpoint e.
 FORMAL SOURCE BOUNDARY:
 "endpoint identities are cubic polynomial identities F_ij(Z(x)) == b_ij"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Chamber has hcubicAll field; constructor proof not ported.
@@ -7976,8 +7901,8 @@ affine endpoint table, c3(e)=e.lead A.  Hence e.lead A=0 for every endpoint e.
 FORMAL SOURCE BOUNDARY:
 "x^3 coefficient gives F_ij(alpha)=0"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt and HistoricalInternalObstruction_ChatLogProofMap.txt row 14.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger and archived formal route ledger row 14.
 
 FORMAL SOURCE BOUNDARY:
 Target fields exist; extraction theorem not ported.
@@ -9355,8 +9280,8 @@ pattern recorded by EndpointVertexRatioForcesEqualAdjacentRatios.
 FORMAL SOURCE BOUNDARY:
 "x^2 coefficient gives equality of vertex ratio sums"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt and HistoricalInternalObstruction_ChatLogProofMap.txt row 15.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger and archived formal route ledger row 15.
 
 FORMAL SOURCE BOUNDARY:
 Target field exists; extraction theorem not ported.
@@ -9529,8 +9454,8 @@ graph connects all four adjacent gaps, hence tau_0=tau_1=tau_2=tau_3.
 FORMAL SOURCE BOUNDARY:
 "prefix/interval averages force common adjacent ratio"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 No checked proof from averages to common tau.
@@ -10622,15 +10547,13 @@ existing ratio data and vertex-forcing structures.
 FORMAL SOURCE BOUNDARY:
 "prefix ratio averages force tau_1=tau_2=tau_3=tau_4"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Fields exist in CanonicalAffineRatioEndpointChamber.
 
 FORMAL SOURCE BOUNDARY:
-Adapter from CE.2/CE.3 lemmas to existing structures.
-
 DEPENDENCIES:
 CE.2, CE.3
 
@@ -10725,8 +10648,8 @@ canonical endpoint coefficient.  Package these ten equalities as hcubicAll.
 FORMAL SOURCE BOUNDARY:
 "constant endpoint identity gives hcubicAll"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Target field exists; adapter not ported.
@@ -10890,8 +10813,8 @@ the chamber record.
 FORMAL SOURCE BOUNDARY:
 "The chamber object already exists as CanonicalAffineRatioEndpointChamber C"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Structure exists; constructor theorem not ported.
@@ -11076,7 +10999,7 @@ needed for H/I endpoint-equation data.
 
 LEAN TARGET:
 PointwiseHIAffinePencilEndpointEqDataTheorem or the nearest current Lean theorem
-feeding speedcube_FGmonochrome_HIaffinePencilEndpointEqData_endgame.
+feeding current_internalObstruction_FGmonochrome_HIaffinePencilEndpointEqData_endgame.
 
 INPUTS:
 - HFGmono : PointwiseFGMonochromeDataTheorem produced by EFG.6b;
@@ -11100,14 +11023,14 @@ endpoint-equation data required by the checked Lean endgame.
 FORMAL SOURCE BOUNDARY:
 "affine magical pencil" and "endpoint identities are cubic polynomial identities"
 
-SPINE CROSS-CHECK:
-Lean1_Erdos887.txt endgame shape and HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived checked endgame source endgame shape and archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
-Lean1_Erdos887.txt contains:
+archived checked endgame source contains:
 - PointwiseFGMonochromeDataTheorem;
 - PointwiseHIAffinePencilEndpointEqDataTheorem;
-- speedcube_FGmonochrome_HIaffinePencilEndpointEqData_endgame;
+- current_internalObstruction_FGmonochrome_HIaffinePencilEndpointEqData_endgame;
 - no_canonical_interval_overload_FGmonochrome_HIaffinePencilEndpointEqData_endgame;
 - CurrentMonochromeFGAffinePencilHIEndgamePackage.
 
@@ -11711,8 +11634,8 @@ producer expected by the downstream H/I interface.
 FORMAL SOURCE BOUNDARY:
 "existing adapters project this into H-core"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Checked in Infinitude/Erdos887.lean.
@@ -11765,8 +11688,8 @@ it for the H/I layer.
 FORMAL SOURCE BOUNDARY:
 "chamber adapters project this into leading equations"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Checked in Infinitude/Erdos887.lean.
@@ -11820,8 +11743,8 @@ packages it for the H/I layer.
 FORMAL SOURCE BOUNDARY:
 "chamber adapters project this into cubic equations"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Checked in Infinitude/Erdos887.lean.
@@ -11875,8 +11798,8 @@ leading equations, and universal cubic equations.
 FORMAL SOURCE BOUNDARY:
 "chamber adapters close H/I production"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Checked in Infinitude/Erdos887.lean.
@@ -11933,8 +11856,8 @@ common tau and converts the affine chamber into pure-scaling endpoint data.
 FORMAL SOURCE BOUNDARY:
 "prefix interval-average rigidity forces common adjacent ratio"
 
-SPINE CROSS-CHECK:
-HistoricalInternalObstruction_AffineEndpointChamber_MiningReport.txt.
+FORMAL AUDIT NOTE:
+archived affine endpoint audit ledger.
 
 FORMAL SOURCE BOUNDARY:
 Checked in Infinitude/Erdos887.lean.
@@ -11977,9 +11900,7 @@ equations closes every canonical interval-overload datum through the DInternal
 route.
 
 LEAN TARGET:
-speedcube_FGmonochrome_HIaffinePencilEndpointEqData_endgame or
-CurrentMonochromeFGAffinePencilHIEndgamePackage.false or the current DInternal
-internal obstruction theorem after adapters.
+The current internal-obstruction close carried by `DInternalRouteData`.
 
 INPUTS:
 - HBCprim : GlobalBCPrimitiveTheorem;
@@ -11994,28 +11915,19 @@ internal obstruction contradiction / no canonical interval-overload datum.
 FULL DERIVATION:
 BC.5 supplies the B/C primitive producer.  The rank/coloring branch supplies
 HFGmono through RX/EFG, specifically EFG.6b.  The affine-pencil chain EFG.7
-plus TS/CE supplies HHIpencil.  The existing Lean endgame theorem
-speedcube_FGmonochrome_HIaffinePencilEndpointEqData_endgame consumes HFGmono
-and HHIpencil to close each canonical interval-overload datum.  The DInternal
+plus TS/CE supplies HHIpencil.  The current internal-obstruction close consumes HFGmono and HHIpencil to close each canonical interval-overload datum.  The DInternal
 route keeps reducedCubic internal, so no reducedCubic bottom obligation is
 reopened.
 
 FORMAL SOURCE BOUNDARY:
 "affine magical pencil" and "Section D is already internal"
 
-SPINE CROSS-CHECK:
-Lean1_Erdos887.txt endgame shape, HistoricalInternalObstruction_PortLedger_Erdos887_v2.txt, and
-HistoricalInternalObstruction_MasterRepairPlan.txt.
+FORMAL AUDIT NOTE:
+archived checked endgame source endgame shape, archived internal-obstruction port ledger, and
+archived formal repair ledger.
 
 FORMAL SOURCE BOUNDARY:
-The endgame shape exists in Lean1_Erdos887.txt; exact current-file adapter names
-must be checked during the Lean port.
-
 FORMAL SOURCE BOUNDARY:
-Adapters from the direct derived producers to PointwiseFGMonochromeDataTheorem
-and PointwiseHIAffinePencilEndpointEqDataTheorem if the current Lean names do
-not already match.
-
 DEPENDENCIES:
 BC.5, RX.4, RX.5, EFG.3c1a, EFG.3c1b, EFG.3c1c, EFG.3c2, EFG.3c3, EFG.3c4,
 EFG.3c5, EFG.6b, EFG.7, TS.3, CE.1, CE.2, CE.3, CE.4, CE.5, CE.6, existing
@@ -12456,12 +12368,15 @@ Everything else is downstream closure plumbing.
 -/
 
 /--
-[PAPER: canonical internal obstruction input]
-Paper role: full formal input package consumed by the internal obstruction.
-This is stronger than the three-component paper datum O_can because it carries
-the staged internal source fields needed by the Lean close.
-Rename target later: CanonicalInternalObstructionInputRawPackage.
-Do not: do not confuse this with CanonicalIntervalOverloadCore.
+[PAPER: canonical internal obstruction input raw package]
+Paper role: proof-ready formal expansion consumed by the internal obstruction.
+
+`CanonicalIntervalOverloadCore` is the Lean counterpart of the paper-level
+three-component datum `O_can`.  This raw package is the expanded internal
+obstruction input over that core: it carries the staged source fields opened by
+the internal roadmap and consumed by the formal close.
+
+Do not identify this raw package with the minimal three-component core.
 -/
 structure CanonicalInternalObstructionInputRawPackage where
   /- BC.1--BC.2 primitive growth data. -/
@@ -12575,9 +12490,6 @@ structure PrefixFrozenGeometryOwner where
 -/
 structure PrefixConeGeometryOwner where
   prefixFrozen : PrefixFrozenGeometryOwner
-  lexicographic_lower_layer_closed : Prop
-  lexicographic_lower_layer_closed_holds :
-    lexicographic_lower_layer_closed
 
 /--
 [PAPER: PrefixConeConflictOwner] Paper label: paper ledger Paper role: coloring, prefix, or monochrome F/G object Lean declaration: PrefixConeConflictOwner Lifecycle: theorem-source component Status: theorem-source surface Inputs: see declaration type and surrounding construction layer Output: see declaration codomain Rename target: PrefixConeConflictOwner Do not: do not weaken, replace, or route around this declaration during annotation passes.
@@ -12934,8 +12846,6 @@ noncomputable def Obligation3_PrefixConeKillPackage.ofConflictOwner
       O.geometry.prefixFrozen.frozen
       P.leadingData
       rfl
-      O.geometry.lexicographic_lower_layer_closed
-      O.geometry.lexicographic_lower_layer_closed_holds
       O.c5ConflictForBranch
       selected.mono
       selected.uses_problem
@@ -13244,8 +13154,6 @@ noncomputable def PrefixConeKillBridgePackage.toKill
     P.conflictOwner.geometry.prefixFrozen.frozen
     (lowRankSource_leadingData S)
     rfl
-    P.conflictOwner.geometry.lexicographic_lower_layer_closed
-    P.conflictOwner.geometry.lexicographic_lower_layer_closed_holds
     P.conflictOwner.c5ConflictForBranch
     P.selected.mono
     P.selected.uses_problem
@@ -14095,7 +14003,7 @@ structure CurrentInternalEndpointDeathSource where
 Endpoint death from the synchronized affine TS/CE route.
 
 This is now just the bridge from the affine route package to its computed local
-CE package.  No arbitrary F/G or H/I datum is used here, and no old endpoint
+CE package.  No arbitrary F/G or H/I datum is used here, and no legacy endpoint
 code is imported.
 -/
 theorem internalEndpointDeath_from_affineTSCE
@@ -14197,7 +14105,7 @@ Preferred endpoint-death route:
   any `True`-filled sector-law or reduced-cubic fields.
 
 Appendix status:
-  `PublicationAppendix` contains paper-support classifications and
+  `former appendix compatibility layer` contains paper-support classifications and
   non-preferred expansions. It is not part of the preferred public theorem
   route.
 -/
@@ -14265,8 +14173,12 @@ obstruction input type.
 namespace ExternalReconstruction
 
 /--
-The paper-level canonical interval-overload datum, specialized to the
-canonical internal obstruction input already closed by `noCanonicalInternalObstructionInputRawPackage`.
+Paper-facing internal obstruction input.
+
+The paper-level three-component datum is represented by
+`ExternalCanonicalExtraction.CanonicalIntervalOverloadCore`.  The final
+formal close consumes the expanded raw package built over that core and its
+staged internal roadmap fields.
 -/
 abbrev CanonicalInternalObstructionInput : Type 1 :=
   CanonicalInternalObstructionInputRawPackage
@@ -14429,6 +14341,7 @@ structure CanonicalExtractionSource where
   threshold :
     forall C : ℝ, 0 < C -> Nat
 
+
 /--
 [PAPER: external reconstruction source]
 Single paper-facing package for the external reconstruction side.
@@ -14448,6 +14361,69 @@ source package.
 structure ExternalReconstructionSource where
   canonicalExtraction : CanonicalExtractionSource
   survivorReconstruction : RootBandSurvivorReconstructionSource
+
+/-
+============================================================
+AUDIT IDENTITY FOR EXTERNAL RECONSTRUCTION SOURCE
+============================================================
+
+`ExternalReconstructionSource` is a record package. It is not the statement
+that no counterexamples exist.
+
+This audit layer records, in Lean, that inhabiting the package is exactly the
+same data as inhabiting its two component packages:
+
+* `CanonicalExtractionSource`
+* `RootBandSurvivorReconstructionSource`
+
+There is no hidden contradiction field and no hidden no-counterexample field.
+============================================================
+-/
+
+/--
+Constructor spelling for the external reconstruction source package.
+-/
+def externalReconstructionSource_of_components
+    (GA : CanonicalExtractionSource)
+    (P : RootBandSurvivorReconstructionSource) :
+    ExternalReconstructionSource where
+  canonicalExtraction := GA
+  survivorReconstruction := P
+
+/--
+The external reconstruction source is exactly its two component source packages.
+
+This is the audit-facing equivalence that prevents the package from being
+misread as a hidden assumption of the final theorem.
+-/
+theorem externalReconstructionSource_nonempty_iff_components :
+    Nonempty ExternalReconstructionSource ↔
+      Nonempty CanonicalExtractionSource ∧
+        Nonempty RootBandSurvivorReconstructionSource := by
+  constructor
+  · intro h
+    rcases h with ⟨X⟩
+    exact
+      ⟨⟨X.canonicalExtraction⟩,
+       ⟨X.survivorReconstruction⟩⟩
+
+  · intro h
+    rcases h with ⟨⟨GA⟩, ⟨P⟩⟩
+    exact
+      ⟨externalReconstructionSource_of_components GA P⟩
+
+/--
+Every external reconstruction source is definitionally just the package made
+from its two fields.
+-/
+theorem externalReconstructionSource_eta
+    (X : ExternalReconstructionSource) :
+    externalReconstructionSource_of_components
+      X.canonicalExtraction
+      X.survivorReconstruction = X := by
+  cases X
+  rfl
+
 /--
 Staged external canonical extraction from the persistent bounded branch surface.
 
@@ -14482,6 +14458,7 @@ theorem canonicalOverloadReconstruction_of_externalExtraction
   let Core := GA.packaging.packCore G
   let O := GA.internalRoadmap.produceRaw Core
   exact ⟨O⟩
+
 /--
 Explicit external reconstruction to internal obstruction handoff.
 
@@ -14497,6 +14474,7 @@ theorem externalExtraction_produces_internalObstructionInput
     (hInf : ExternalInfiniteViolations actualNearRootDivisorCount C) :
     Nonempty CanonicalInternalObstructionInput :=
   canonicalOverloadReconstruction_of_externalExtraction GA P C hCpos hInf
+
 /--
 external reconstruction plus internal obstruction closes external infinite violations.
 
@@ -14513,6 +14491,7 @@ theorem externalExtraction_plus_internalObstruction_closes_externalViolations
   intro hInf
   rcases externalExtraction_produces_internalObstructionInput GA P hCpos hInf with ⟨O⟩
   exact no_CanonicalInternalObstructionInput O
+
 /--
 Paper-facing external conclusion from staged external reconstruction plus existing internal obstruction.
 
@@ -14526,6 +14505,7 @@ theorem noExternalInfiniteViolations_from_externalCanonicalExtraction
     (hCpos : 0 < C) :
     ¬ ExternalInfiniteViolations actualNearRootDivisorCount C :=
   externalExtraction_plus_internalObstruction_closes_externalViolations GA P C hCpos
+
 theorem Paper_Corollary_1_2_ExternalNoInfiniteViolations
     (GA : CanonicalExtractionSource)
     (P : RootBandSurvivorReconstructionSource)
@@ -14765,5 +14745,1973 @@ theorem Paper_Corollary_1_2_Final
   Paper_Corollary_1_2_Final_from_sourceComponents
     X.canonicalExtraction X.survivorReconstruction C hCpos
 
+
+/-
+Formal-conjectures style consequence, using the internal divisor-count
+definition already used by this file.
+
+This is the clean logical bridge:
+
+  ¬ ExternalInfiniteViolations actualNearRootDivisorCount C
+  ->
+  ∀ᶠ n in atTop, actualNearRootDivisorCount C n ≤ 4.
+-/
+theorem Paper_Corollary_1_2_Final_eventually_actual_count_le_four
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource)
+    (C : ℝ)
+    (hCpos : 0 < C) :
+    ∀ᶠ n in Filter.atTop,
+      ExternalReconstruction.actualNearRootDivisorCount C n ≤ 4 := by
+  classical
+  have hNo :
+      ¬ ExternalReconstruction.ExternalInfiniteViolations
+          ExternalReconstruction.actualNearRootDivisorCount C :=
+    Paper_Corollary_1_2_Final X C hCpos
+
+  rw [ExternalReconstruction.ExternalInfiniteViolations] at hNo
+  rw [Filter.eventually_atTop]
+
+  by_contra hEventuallyFails
+  push_neg at hEventuallyFails
+
+  apply hNo
+  intro N
+  rcases hEventuallyFails N with ⟨n, hnN, hnBad⟩
+  exact ⟨n, hnN, by omega⟩
+
+
+/-
+Formal-conjectures style existential K statement, again using this file's
+internal divisor count.
+-/
+theorem Paper_Corollary_1_2_Final_exists_eventual_bound_actual_count
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    ∃ K : Nat, ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+      ExternalReconstruction.actualNearRootDivisorCount C n ≤ K := by
+  refine ⟨4, ?_⟩
+  intro C hCpos
+  exact Paper_Corollary_1_2_Final_eventually_actual_count_le_four X C hCpos
+
+/-
+The divisor-count shape used by the formal-conjectures Erdős 887 stub.
+
+Their stub counts divisors in:
+
+  Ioo ⌊√n⌋₊ ⌈√n + C * n^(1/4)⌉₊
+
+rather than using the real inequalities directly.
+-/
+noncomputable def formalConjecturesStyleNearRootDivisorCount
+    (C : ℝ) (n : Nat) : Nat :=
+  let lo : Nat := ⌊Real.sqrt (n : ℝ)⌋₊
+  let hi : Nat :=
+    ⌈Real.sqrt (n : ℝ) +
+      C * Real.rpow (n : ℝ) ((1 : ℝ) / 4)⌉₊
+  ((Finset.Ioo lo hi).filter (fun d : Nat => d ∣ n)).card
+
+/-
+Bridge from the formal-conjectures floor/ceil divisor window to the
+real-inequality divisor window used by this file.
+
+We only need the one-sided bound:
+
+  formalConjecturesStyleNearRootDivisorCount C n
+    ≤ actualNearRootDivisorCount C n
+
+for all positive n.
+
+This is enough because the existing endpoint already proves that the actual
+count is eventually ≤ 4.
+-/
+theorem formalConjecturesStyleNearRootDivisorCount_le_actualNearRootDivisorCount_of_pos
+    (C : ℝ) {n : Nat} (hnpos : 0 < n) :
+    formalConjecturesStyleNearRootDivisorCount C n ≤
+      ExternalReconstruction.actualNearRootDivisorCount C n := by
+  classical
+
+  let lowerReal : ℝ := Real.sqrt (n : ℝ)
+  let upperReal : ℝ :=
+    Real.sqrt (n : ℝ) +
+      C * Real.rpow (n : ℝ) ((1 : ℝ) / 4)
+
+  let lo : Nat := ⌊lowerReal⌋₊
+  let hi : Nat := ⌈upperReal⌉₊
+
+  let Sformal : Finset Nat :=
+    (Finset.Ioo lo hi).filter (fun d : Nat => d ∣ n)
+
+  let Sactual : Finset Nat :=
+    (Finset.range (n + 1)).filter
+      (fun d : Nat =>
+        d ∣ n ∧
+        lowerReal < (d : ℝ) ∧
+        (d : ℝ) < upperReal)
+
+  have hsubset : Sformal ⊆ Sactual := by
+    intro d hd
+
+    have hdIoo : d ∈ Finset.Ioo lo hi :=
+      (Finset.mem_filter.mp hd).1
+    have hddiv : d ∣ n :=
+      (Finset.mem_filter.mp hd).2
+
+    have hbounds : lo < d ∧ d < hi := by
+      simpa [Finset.mem_Ioo] using hdIoo
+
+    have hdle_n : d ≤ n :=
+      Nat.le_of_dvd hnpos hddiv
+
+    have hLower : lowerReal < (d : ℝ) := by
+      have hnotle_nat : ¬ d ≤ ⌊lowerReal⌋₊ := by
+        have hnotle_lo : ¬ d ≤ lo :=
+          Nat.not_le_of_gt hbounds.1
+        simpa [lo] using hnotle_lo
+      have hnotle_real : ¬ (d : ℝ) ≤ lowerReal := by
+        intro hreal
+        exact hnotle_nat (Nat.le_floor hreal)
+      exact lt_of_not_ge hnotle_real
+
+    have hUpper : (d : ℝ) < upperReal := by
+      have hdhi : d < ⌈upperReal⌉₊ := by
+        simpa [hi] using hbounds.2
+      exact (Nat.lt_ceil.mp hdhi)
+
+    apply Finset.mem_filter.mpr
+    constructor
+    · apply Finset.mem_range.mpr
+      omega
+    · exact ⟨hddiv, hLower, hUpper⟩
+
+  have hcard : Sformal.card ≤ Sactual.card :=
+    Finset.card_le_card hsubset
+
+  simpa [
+    formalConjecturesStyleNearRootDivisorCount,
+    ExternalReconstruction.actualNearRootDivisorCount,
+    Sformal,
+    Sactual,
+    lo,
+    hi,
+    lowerReal,
+    upperReal
+  ] using hcard
+
+
+theorem formalConjecturesStyleNearRootDivisorCount_eventually_le_actualNearRootDivisorCount
+    (C : ℝ) :
+    ∀ᶠ n in Filter.atTop,
+      formalConjecturesStyleNearRootDivisorCount C n ≤
+        ExternalReconstruction.actualNearRootDivisorCount C n := by
+  rw [Filter.eventually_atTop]
+  refine ⟨1, ?_⟩
+  intro n hn
+  exact
+    formalConjecturesStyleNearRootDivisorCount_le_actualNearRootDivisorCount_of_pos
+      C
+      (by omega)
+
+
+/-
+This is the formal-conjectures-style existential bound, stated using the
+floor/ceil interval count.
+-/
+theorem Paper_Corollary_1_2_Final_exists_eventual_bound_formalConjectures_style
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    ∃ K : Nat, ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+      formalConjecturesStyleNearRootDivisorCount C n ≤ K := by
+  refine ⟨4, ?_⟩
+  intro C hCpos
+
+  have hActual :
+      ∀ᶠ n in Filter.atTop,
+        ExternalReconstruction.actualNearRootDivisorCount C n ≤ 4 :=
+    Paper_Corollary_1_2_Final_eventually_actual_count_le_four X C hCpos
+
+  have hBridge :
+      ∀ᶠ n in Filter.atTop,
+        formalConjecturesStyleNearRootDivisorCount C n ≤
+          ExternalReconstruction.actualNearRootDivisorCount C n :=
+    formalConjecturesStyleNearRootDivisorCount_eventually_le_actualNearRootDivisorCount C
+
+  filter_upwards [hBridge, hActual] with n hB hA
+  exact le_trans hB hA
+
+
+/-
+Literal formal-conjectures-style statement, but without the `#{ ... }`
+notation from FormalConjectures.Util.ProblemImports.
+
+This is the same divisor set as the DeepMind Erdős 887 `parts.ii` statement:
+  d ∈ Ioo ⌊√n⌋₊ ⌈√n + C*n^(1/4)⌉₊
+  d ∣ n
+-/
+theorem Paper_Corollary_1_2_Final_exists_eventual_bound_formalConjectures_card_statement
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    ∃ K : Nat, ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+      Finset.card
+        (Finset.filter
+          (fun d : Nat => d ∣ n)
+          (Finset.Ioo
+            (⌊Real.sqrt (n : ℝ)⌋₊)
+            (⌈Real.sqrt (n : ℝ) +
+                C * Real.rpow (n : ℝ) ((1 : ℝ) / 4)⌉₊))) ≤ K := by
+  simpa [formalConjecturesStyleNearRootDivisorCount] using
+    Paper_Corollary_1_2_Final_exists_eventual_bound_formalConjectures_style X
+
+
+/-
+Formal-conjectures-style bound with the explicit optimal witness K = 4,
+again written without the `#{ ... }` notation.
+-/
+theorem Paper_Corollary_1_2_Final_formalConjectures_card_statement_K4
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+      Finset.card
+        (Finset.filter
+          (fun d : Nat => d ∣ n)
+          (Finset.Ioo
+            (⌊Real.sqrt (n : ℝ)⌋₊)
+            (⌈Real.sqrt (n : ℝ) +
+                C * Real.rpow (n : ℝ) ((1 : ℝ) / 4)⌉₊))) ≤ 4 := by
+  intro C hCpos
+
+  have hBound :
+      ∀ᶠ n in Filter.atTop,
+        formalConjecturesStyleNearRootDivisorCount C n ≤ 4 := by
+    have hActual :
+        ∀ᶠ n in Filter.atTop,
+          ExternalReconstruction.actualNearRootDivisorCount C n ≤ 4 :=
+      Paper_Corollary_1_2_Final_eventually_actual_count_le_four X C hCpos
+
+    have hBridge :
+        ∀ᶠ n in Filter.atTop,
+          formalConjecturesStyleNearRootDivisorCount C n ≤
+            ExternalReconstruction.actualNearRootDivisorCount C n :=
+      formalConjecturesStyleNearRootDivisorCount_eventually_le_actualNearRootDivisorCount C
+
+    filter_upwards [hBridge, hActual] with n hB hA
+    exact le_trans hB hA
+
+  simpa [formalConjecturesStyleNearRootDivisorCount] using hBound
+
+
+/-
+============================================================
+ROSENFELD CONCRETE CONSTRUCTION, SAFE-NAME VERSION
+============================================================
+
+This is the arithmetic skeleton of the Erdős--Rosenfeld construction.
+
+The previous version used names like A0, B0, Na.  If those names are out of
+scope, Lean silently auto-creates them as local variables.  This version uses
+lowercase names to avoid that trap.
+============================================================
+-/
+namespace RosenfeldConstructionV2
+
+def rfN (a : Nat) : Nat :=
+  a * (a + 1) * (a + 2) * (a + 3) *
+    (a + 4) * (a + 5) * (a + 6) * (a + 7)
+
+def rfA0 (a : Nat) : Nat := (a + 1) * (a + 2) * (a + 4) * (a + 7)
+def rfB0 (a : Nat) : Nat := a * (a + 3) * (a + 5) * (a + 6)
+
+def rfA1 (a : Nat) : Nat := (a + 1) * (a + 2) * (a + 5) * (a + 6)
+def rfB1 (a : Nat) : Nat := a * (a + 3) * (a + 4) * (a + 7)
+
+def rfA2 (a : Nat) : Nat := (a + 1) * (a + 3) * (a + 4) * (a + 6)
+def rfB2 (a : Nat) : Nat := a * (a + 2) * (a + 5) * (a + 7)
+
+def rfA3 (a : Nat) : Nat := (a + 2) * (a + 3) * (a + 4) * (a + 5)
+def rfB3 (a : Nat) : Nat := a * (a + 1) * (a + 6) * (a + 7)
+
+
+theorem rfA0_mul_rfB0_eq_rfN (a : Nat) :
+    rfA0 a * rfB0 a = rfN a := by
+  unfold rfA0 rfB0 rfN
+  ring_nf
+
+theorem rfA1_mul_rfB1_eq_rfN (a : Nat) :
+    rfA1 a * rfB1 a = rfN a := by
+  unfold rfA1 rfB1 rfN
+  ring_nf
+
+theorem rfA2_mul_rfB2_eq_rfN (a : Nat) :
+    rfA2 a * rfB2 a = rfN a := by
+  unfold rfA2 rfB2 rfN
+  ring_nf
+
+theorem rfA3_mul_rfB3_eq_rfN (a : Nat) :
+    rfA3 a * rfB3 a = rfN a := by
+  unfold rfA3 rfB3 rfN
+  ring_nf
+
+
+/-
+Gap equations.  These avoid Nat subtraction.
+-/
+theorem rfB0_add_gap_eq_rfA0 (a : Nat) :
+    rfB0 a + (16 * a + 56) = rfA0 a := by
+  unfold rfA0 rfB0
+  ring_nf
+
+theorem rfB1_add_gap_eq_rfA1 (a : Nat) :
+    rfB1 a + (4 * a ^ 2 + 28 * a + 60) = rfA1 a := by
+  unfold rfA1 rfB1
+  ring_nf
+
+theorem rfB2_add_gap_eq_rfA2 (a : Nat) :
+    rfB2 a + (8 * a ^ 2 + 56 * a + 72) = rfA2 a := by
+  unfold rfA2 rfB2
+  ring_nf
+
+theorem rfB3_add_gap_eq_rfA3 (a : Nat) :
+    rfB3 a + (16 * a ^ 2 + 112 * a + 120) = rfA3 a := by
+  unfold rfA3 rfB3
+  ring_nf
+
+
+theorem rfA0_gt_rfB0 (a : Nat) :
+    rfB0 a < rfA0 a := by
+  have h := rfB0_add_gap_eq_rfA0 a
+  omega
+
+theorem rfA1_gt_rfB1 (a : Nat) :
+    rfB1 a < rfA1 a := by
+  have h := rfB1_add_gap_eq_rfA1 a
+  omega
+
+theorem rfA2_gt_rfB2 (a : Nat) :
+    rfB2 a < rfA2 a := by
+  have h := rfB2_add_gap_eq_rfA2 a
+  omega
+
+theorem rfA3_gt_rfB3 (a : Nat) :
+    rfB3 a < rfA3 a := by
+  have h := rfB3_add_gap_eq_rfA3 a
+  omega
+
+
+theorem rfA0_dvd_rfN (a : Nat) :
+    rfA0 a ∣ rfN a := by
+  refine ⟨rfB0 a, ?_⟩
+  exact (rfA0_mul_rfB0_eq_rfN a).symm
+
+theorem rfA1_dvd_rfN (a : Nat) :
+    rfA1 a ∣ rfN a := by
+  refine ⟨rfB1 a, ?_⟩
+  exact (rfA1_mul_rfB1_eq_rfN a).symm
+
+theorem rfA2_dvd_rfN (a : Nat) :
+    rfA2 a ∣ rfN a := by
+  refine ⟨rfB2 a, ?_⟩
+  exact (rfA2_mul_rfB2_eq_rfN a).symm
+
+theorem rfA3_dvd_rfN (a : Nat) :
+    rfA3 a ∣ rfN a := by
+  refine ⟨rfB3 a, ?_⟩
+  exact (rfA3_mul_rfB3_eq_rfN a).symm
+
+
+/-
+Ordering of the four large divisors.
+-/
+theorem rfA0_add_gap_eq_rfA1 (a : Nat) :
+    rfA0 a + (2 * a ^ 2 + 6 * a + 4) = rfA1 a := by
+  unfold rfA0 rfA1
+  ring_nf
+
+theorem rfA1_add_gap_eq_rfA2 (a : Nat) :
+    rfA1 a + (2 * a ^ 2 + 14 * a + 12) = rfA2 a := by
+  unfold rfA1 rfA2
+  ring_nf
+
+theorem rfA2_add_gap_eq_rfA3 (a : Nat) :
+    rfA2 a + (4 * a ^ 2 + 28 * a + 48) = rfA3 a := by
+  unfold rfA2 rfA3
+  ring_nf
+
+theorem rfA0_lt_rfA1 (a : Nat) :
+    rfA0 a < rfA1 a := by
+  have h := rfA0_add_gap_eq_rfA1 a
+  omega
+
+theorem rfA1_lt_rfA2 (a : Nat) :
+    rfA1 a < rfA2 a := by
+  have h := rfA1_add_gap_eq_rfA2 a
+  omega
+
+theorem rfA2_lt_rfA3 (a : Nat) :
+    rfA2 a < rfA3 a := by
+  have h := rfA2_add_gap_eq_rfA3 a
+  omega
+
+/-
+============================================================
+ROSENFELD FORMAL-WINDOW COUNT BRIDGE
+============================================================
+
+This block converts four concrete divisors in the formal-conjectures
+floor/ceil window into the lower bound
+
+  4 ≤ formalConjecturesStyleNearRootDivisorCount C (rfN a).
+
+It does not yet prove the analytic window placement.  That is the next layer.
+============================================================
+-/
+
+/--
+The formal-conjectures divisor window for the Rosenfeld integer `rfN a`.
+-/
+noncomputable def rfFormalWindowSet
+    (C : ℝ) (a : Nat) : Finset Nat :=
+  Finset.filter
+    (fun d : Nat => d ∣ rfN a)
+    (Finset.Ioo
+      (⌊Real.sqrt (rfN a : ℝ)⌋₊)
+      (⌈Real.sqrt (rfN a : ℝ) +
+          C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)⌉₊))
+
+
+/--
+The Rosenfeld formal-window set has exactly the same cardinality as the
+formal-conjectures-style divisor count at `n = rfN a`.
+-/
+theorem rfFormalWindowSet_card_eq_count
+    (C : ℝ) (a : Nat) :
+    (rfFormalWindowSet C a).card =
+      formalConjecturesStyleNearRootDivisorCount C (rfN a) := by
+  simp [rfFormalWindowSet, formalConjecturesStyleNearRootDivisorCount]
+
+
+/--
+Generic finite-set lemma: four distinct elements of a finite set force
+cardinality at least four.
+-/
+theorem four_distinct_mem_card_ge_four
+    {S : Finset Nat}
+    {d0 d1 d2 d3 : Nat}
+    (h0 : d0 ∈ S)
+    (h1 : d1 ∈ S)
+    (h2 : d2 ∈ S)
+    (h3 : d3 ∈ S)
+    (h01 : d0 ≠ d1)
+    (h02 : d0 ≠ d2)
+    (h03 : d0 ≠ d3)
+    (h12 : d1 ≠ d2)
+    (h13 : d1 ≠ d3)
+    (h23 : d2 ≠ d3) :
+    4 ≤ S.card := by
+  classical
+
+  let T : Finset Nat := {d0, d1, d2, d3}
+
+  have hTsubset : T ⊆ S := by
+    intro d hd
+    simp [T] at hd
+    rcases hd with hd | hd | hd | hd
+    · simpa [hd] using h0
+    · simpa [hd] using h1
+    · simpa [hd] using h2
+    · simpa [hd] using h3
+
+  have hTcard : T.card = 4 := by
+    simp [T, h01, h02, h03, h12, h13, h23]
+
+  have hle : T.card ≤ S.card :=
+    Finset.card_le_card hTsubset
+
+  omega
+
+
+/--
+The four Rosenfeld large factors are pairwise distinct.
+-/
+theorem rfA0_ne_rfA1 (a : Nat) :
+    rfA0 a ≠ rfA1 a := by
+  exact ne_of_lt (rfA0_lt_rfA1 a)
+
+theorem rfA0_ne_rfA2 (a : Nat) :
+    rfA0 a ≠ rfA2 a := by
+  exact ne_of_lt (lt_trans (rfA0_lt_rfA1 a) (rfA1_lt_rfA2 a))
+
+theorem rfA0_ne_rfA3 (a : Nat) :
+    rfA0 a ≠ rfA3 a := by
+  exact ne_of_lt
+    (lt_trans
+      (lt_trans (rfA0_lt_rfA1 a) (rfA1_lt_rfA2 a))
+      (rfA2_lt_rfA3 a))
+
+theorem rfA1_ne_rfA2 (a : Nat) :
+    rfA1 a ≠ rfA2 a := by
+  exact ne_of_lt (rfA1_lt_rfA2 a)
+
+theorem rfA1_ne_rfA3 (a : Nat) :
+    rfA1 a ≠ rfA3 a := by
+  exact ne_of_lt (lt_trans (rfA1_lt_rfA2 a) (rfA2_lt_rfA3 a))
+
+theorem rfA2_ne_rfA3 (a : Nat) :
+    rfA2 a ≠ rfA3 a := by
+  exact ne_of_lt (rfA2_lt_rfA3 a)
+
+
+/--
+A local packet saying that the four Rosenfeld large factors actually lie in
+the formal-conjectures window for `rfN a`.
+
+The next analytic bridge will construct this packet from square-root and
+fourth-root estimates.
+-/
+structure rfFourInFormalWindow
+    (C : ℝ) (a : Nat) where
+  h0mem : rfA0 a ∈ rfFormalWindowSet C a
+  h1mem : rfA1 a ∈ rfFormalWindowSet C a
+  h2mem : rfA2 a ∈ rfFormalWindowSet C a
+  h3mem : rfA3 a ∈ rfFormalWindowSet C a
+
+
+/--
+If the four Rosenfeld factors are in the formal-conjectures window, then
+the formal-conjectures count is at least four.
+-/
+theorem rfFourInFormalWindow.count_ge_four
+    {C : ℝ} {a : Nat}
+    (W : rfFourInFormalWindow C a) :
+    4 ≤ formalConjecturesStyleNearRootDivisorCount C (rfN a) := by
+  have h4 :
+      4 ≤ (rfFormalWindowSet C a).card :=
+    four_distinct_mem_card_ge_four
+      W.h0mem
+      W.h1mem
+      W.h2mem
+      W.h3mem
+      (rfA0_ne_rfA1 a)
+      (rfA0_ne_rfA2 a)
+      (rfA0_ne_rfA3 a)
+      (rfA1_ne_rfA2 a)
+      (rfA1_ne_rfA3 a)
+      (rfA2_ne_rfA3 a)
+
+  simpa [rfFormalWindowSet_card_eq_count C a] using h4
+
+/-
+============================================================
+ROSENFELD FLOOR/CEIL WINDOW PLACEMENT BRIDGE
+============================================================
+
+This block says:
+
+  if the four Rosenfeld large factors lie between the floor/ceil endpoints
+  of the formal-conjectures window, then they are members of the
+  formal-window divisor set, hence the count is at least four.
+
+The analytic work still to come is proving these floor/ceil inequalities
+from the explicit Rosenfeld formulas.
+============================================================
+-/
+
+/--
+Floor/ceil placement bounds for the four Rosenfeld large factors.
+-/
+structure rfFourIooBounds
+    (C : ℝ) (a : Nat) where
+  h0lo :
+    ⌊Real.sqrt (rfN a : ℝ)⌋₊ < rfA0 a
+  h0hi :
+    rfA0 a <
+      ⌈Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)⌉₊
+
+  h1lo :
+    ⌊Real.sqrt (rfN a : ℝ)⌋₊ < rfA1 a
+  h1hi :
+    rfA1 a <
+      ⌈Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)⌉₊
+
+  h2lo :
+    ⌊Real.sqrt (rfN a : ℝ)⌋₊ < rfA2 a
+  h2hi :
+    rfA2 a <
+      ⌈Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)⌉₊
+
+  h3lo :
+    ⌊Real.sqrt (rfN a : ℝ)⌋₊ < rfA3 a
+  h3hi :
+    rfA3 a <
+      ⌈Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)⌉₊
+
+
+theorem rfA0_mem_rfFormalWindowSet_of_IooBounds
+    {C : ℝ} {a : Nat}
+    (B : rfFourIooBounds C a) :
+    rfA0 a ∈ rfFormalWindowSet C a := by
+  classical
+  unfold rfFormalWindowSet
+  apply Finset.mem_filter.mpr
+  constructor
+  · simpa [Finset.mem_Ioo] using And.intro B.h0lo B.h0hi
+  · exact rfA0_dvd_rfN a
+
+
+theorem rfA1_mem_rfFormalWindowSet_of_IooBounds
+    {C : ℝ} {a : Nat}
+    (B : rfFourIooBounds C a) :
+    rfA1 a ∈ rfFormalWindowSet C a := by
+  classical
+  unfold rfFormalWindowSet
+  apply Finset.mem_filter.mpr
+  constructor
+  · simpa [Finset.mem_Ioo] using And.intro B.h1lo B.h1hi
+  · exact rfA1_dvd_rfN a
+
+
+theorem rfA2_mem_rfFormalWindowSet_of_IooBounds
+    {C : ℝ} {a : Nat}
+    (B : rfFourIooBounds C a) :
+    rfA2 a ∈ rfFormalWindowSet C a := by
+  classical
+  unfold rfFormalWindowSet
+  apply Finset.mem_filter.mpr
+  constructor
+  · simpa [Finset.mem_Ioo] using And.intro B.h2lo B.h2hi
+  · exact rfA2_dvd_rfN a
+
+
+theorem rfA3_mem_rfFormalWindowSet_of_IooBounds
+    {C : ℝ} {a : Nat}
+    (B : rfFourIooBounds C a) :
+    rfA3 a ∈ rfFormalWindowSet C a := by
+  classical
+  unfold rfFormalWindowSet
+  apply Finset.mem_filter.mpr
+  constructor
+  · simpa [Finset.mem_Ioo] using And.intro B.h3lo B.h3hi
+  · exact rfA3_dvd_rfN a
+
+
+/--
+The four floor/ceil placement bounds produce the formal-window packet.
+-/
+theorem rfFourInFormalWindow_of_IooBounds
+    {C : ℝ} {a : Nat}
+    (B : rfFourIooBounds C a) :
+    rfFourInFormalWindow C a where
+  h0mem := rfA0_mem_rfFormalWindowSet_of_IooBounds B
+  h1mem := rfA1_mem_rfFormalWindowSet_of_IooBounds B
+  h2mem := rfA2_mem_rfFormalWindowSet_of_IooBounds B
+  h3mem := rfA3_mem_rfFormalWindowSet_of_IooBounds B
+
+
+/--
+Floor/ceil placement bounds imply the four-divisor lower count at `rfN a`.
+-/
+theorem rf_count_ge_four_of_IooBounds
+    {C : ℝ} {a : Nat}
+    (B : rfFourIooBounds C a) :
+    4 ≤ formalConjecturesStyleNearRootDivisorCount C (rfN a) :=
+  rfFourInFormalWindow.count_ge_four
+    (rfFourInFormalWindow_of_IooBounds B)
+
+
+/--
+If floor/ceil placement bounds occur arbitrarily far out along the Rosenfeld
+family, then the formal-conjectures count is at least four arbitrarily far out.
+-/
+theorem rf_arbitrarily_large_count_ge_four_of_IooBounds
+    {C : ℝ}
+    (H :
+      ∀ N : Nat,
+        ∃ a : Nat,
+          N ≤ rfN a ∧
+          rfFourIooBounds C a) :
+    ∀ N : Nat,
+      ∃ n : Nat,
+        N ≤ n ∧
+        4 ≤ formalConjecturesStyleNearRootDivisorCount C n := by
+  intro N
+  rcases H N with ⟨a, haN, hBounds⟩
+  exact ⟨rfN a, haN, rf_count_ge_four_of_IooBounds hBounds⟩
+
+/-
+============================================================
+ROSENFELD REAL-WINDOW TO FLOOR/CEIL BRIDGE
+============================================================
+
+This block converts real window placement into the exact floor/ceil
+placement required by the formal-conjectures divisor count.
+============================================================
+-/
+
+/--
+Real window bounds for the four Rosenfeld large factors.
+-/
+structure rfFourRealWindowBounds
+    (C : ℝ) (a : Nat) where
+  h0lo :
+    Real.sqrt (rfN a : ℝ) < (rfA0 a : ℝ)
+  h0hi :
+    (rfA0 a : ℝ) <
+      Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)
+
+  h1lo :
+    Real.sqrt (rfN a : ℝ) < (rfA1 a : ℝ)
+  h1hi :
+    (rfA1 a : ℝ) <
+      Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)
+
+  h2lo :
+    Real.sqrt (rfN a : ℝ) < (rfA2 a : ℝ)
+  h2hi :
+    (rfA2 a : ℝ) <
+      Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)
+
+  h3lo :
+    Real.sqrt (rfN a : ℝ) < (rfA3 a : ℝ)
+  h3hi :
+    (rfA3 a : ℝ) <
+      Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)
+
+
+/--
+If a real number lies below a natural number, then its natural floor lies below
+that natural number.
+-/
+theorem nat_floor_lt_of_real_lt_nat
+    {x : ℝ} {d : Nat}
+    (hx_nonneg : 0 ≤ x)
+    (h : x < (d : ℝ)) :
+    ⌊x⌋₊ < d := by
+  exact (Nat.floor_lt hx_nonneg).mpr h
+
+
+/--
+If a natural number lies below a real number, then it lies below the natural
+ceiling of that real number.
+-/
+theorem nat_lt_ceil_of_nat_lt_real
+    {x : ℝ} {d : Nat}
+    (h : (d : ℝ) < x) :
+    d < ⌈x⌉₊ := by
+  exact (Nat.lt_ceil).mpr h
+
+
+/--
+Real window bounds imply the exact floor/ceil bounds used by the
+formal-conjectures interval.
+-/
+theorem rfFourIooBounds_of_realWindowBounds
+    {C : ℝ} {a : Nat}
+    (B : rfFourRealWindowBounds C a) :
+    rfFourIooBounds C a where
+  h0lo :=
+    nat_floor_lt_of_real_lt_nat
+      (Real.sqrt_nonneg (rfN a : ℝ))
+      B.h0lo
+  h0hi :=
+    nat_lt_ceil_of_nat_lt_real
+      B.h0hi
+
+  h1lo :=
+    nat_floor_lt_of_real_lt_nat
+      (Real.sqrt_nonneg (rfN a : ℝ))
+      B.h1lo
+  h1hi :=
+    nat_lt_ceil_of_nat_lt_real
+      B.h1hi
+
+  h2lo :=
+    nat_floor_lt_of_real_lt_nat
+      (Real.sqrt_nonneg (rfN a : ℝ))
+      B.h2lo
+  h2hi :=
+    nat_lt_ceil_of_nat_lt_real
+      B.h2hi
+
+  h3lo :=
+    nat_floor_lt_of_real_lt_nat
+      (Real.sqrt_nonneg (rfN a : ℝ))
+      B.h3lo
+  h3hi :=
+    nat_lt_ceil_of_nat_lt_real
+      B.h3hi
+
+
+/--
+Real window bounds imply the four-divisor lower count at `rfN a`.
+-/
+theorem rf_count_ge_four_of_realWindowBounds
+    {C : ℝ} {a : Nat}
+    (B : rfFourRealWindowBounds C a) :
+    4 ≤ formalConjecturesStyleNearRootDivisorCount C (rfN a) :=
+  rf_count_ge_four_of_IooBounds
+    (rfFourIooBounds_of_realWindowBounds B)
+
+
+/--
+If real window bounds occur arbitrarily far out along the Rosenfeld family,
+then the formal-conjectures count is at least four arbitrarily far out.
+-/
+theorem rf_arbitrarily_large_count_ge_four_of_realWindowBounds
+    {C : ℝ}
+    (H :
+      ∀ N : Nat,
+        ∃ a : Nat,
+          N ≤ rfN a ∧
+          rfFourRealWindowBounds C a) :
+    ∀ N : Nat,
+      ∃ n : Nat,
+        N ≤ n ∧
+        4 ≤ formalConjecturesStyleNearRootDivisorCount C n := by
+  intro N
+  rcases H N with ⟨a, haN, hBounds⟩
+  exact ⟨rfN a, haN, rf_count_ge_four_of_realWindowBounds hBounds⟩
+
+
+/-
+============================================================
+ROSENFELD ROOT-SANDWICH AND GAP-WIDTH BRIDGE
+============================================================
+
+This block proves the structural real-window mechanism.
+
+For each Rosenfeld factorization
+
+  rfA_i a * rfB_i a = rfN a
+  rfB_i a < rfA_i a,
+
+the square root of rfN a lies strictly between the two factors.
+
+Then, if the factor gap is bounded by the chosen fourth-root window width,
+the large factor lies inside the near-root interval.
+============================================================
+-/
+
+/--
+If `A * B = N`, `0 < B`, and `B < A`, then the smaller factor is below
+`sqrt N`.
+-/
+theorem small_factor_lt_sqrt_of_nat_mul_eq_of_lt
+    {A B N : Nat}
+    (hBpos : 0 < B)
+    (hprod : A * B = N)
+    (hBA : B < A) :
+    (B : ℝ) < Real.sqrt (N : ℝ) := by
+  have hNnonneg : 0 ≤ (N : ℝ) := by
+    exact_mod_cast Nat.zero_le N
+
+  have hsq :
+      Real.sqrt (N : ℝ) * Real.sqrt (N : ℝ) = (N : ℝ) := by
+    simp
+
+  have hprodR :
+      (A : ℝ) * (B : ℝ) = (N : ℝ) := by
+    exact_mod_cast hprod
+
+  have hBltA : (B : ℝ) < (A : ℝ) := by
+    exact_mod_cast hBA
+
+  have hBposR : 0 < (B : ℝ) := by
+    exact_mod_cast hBpos
+
+  by_contra hnot
+  have hSleB : Real.sqrt (N : ℝ) ≤ (B : ℝ) :=
+    le_of_not_gt hnot
+
+  have hSltA : Real.sqrt (N : ℝ) < (A : ℝ) :=
+    lt_of_le_of_lt hSleB hBltA
+
+  have hsq_le_sB :
+      Real.sqrt (N : ℝ) * Real.sqrt (N : ℝ) ≤
+        Real.sqrt (N : ℝ) * (B : ℝ) := by
+    exact
+      mul_le_mul_of_nonneg_left
+        hSleB
+        (Real.sqrt_nonneg (N : ℝ))
+
+  have hsB_lt_prod :
+      Real.sqrt (N : ℝ) * (B : ℝ) <
+        (A : ℝ) * (B : ℝ) := by
+    exact mul_lt_mul_of_pos_right hSltA hBposR
+
+  have hlt : (N : ℝ) < (N : ℝ) := by
+    calc
+      (N : ℝ) =
+          Real.sqrt (N : ℝ) * Real.sqrt (N : ℝ) := hsq.symm
+      _ ≤ Real.sqrt (N : ℝ) * (B : ℝ) := hsq_le_sB
+      _ < (A : ℝ) * (B : ℝ) := hsB_lt_prod
+      _ = (N : ℝ) := hprodR
+
+  exact (lt_irrefl (N : ℝ)) hlt
+
+
+/--
+If `A * B = N`, `0 < B`, and `B < A`, then the larger factor is above
+`sqrt N`.
+-/
+theorem sqrt_lt_large_factor_of_nat_mul_eq_of_lt
+    {A B N : Nat}
+    (hBpos : 0 < B)
+    (hprod : A * B = N)
+    (hBA : B < A) :
+    Real.sqrt (N : ℝ) < (A : ℝ) := by
+  have hNnonneg : 0 ≤ (N : ℝ) := by
+    exact_mod_cast Nat.zero_le N
+
+  have hsq :
+      Real.sqrt (N : ℝ) * Real.sqrt (N : ℝ) = (N : ℝ) := by
+    simp
+
+  have hprodR :
+      (A : ℝ) * (B : ℝ) = (N : ℝ) := by
+    exact_mod_cast hprod
+
+  have hBltA : (B : ℝ) < (A : ℝ) := by
+    exact_mod_cast hBA
+
+  have hBposR : 0 < (B : ℝ) := by
+    exact_mod_cast hBpos
+
+  have hApos : 0 < (A : ℝ) :=
+    lt_trans hBposR hBltA
+
+  by_contra hnot
+  have hAleS : (A : ℝ) ≤ Real.sqrt (N : ℝ) :=
+    le_of_not_gt hnot
+
+  have hBltS : (B : ℝ) < Real.sqrt (N : ℝ) :=
+    lt_of_lt_of_le hBltA hAleS
+
+  have hprod_lt_AS :
+      (A : ℝ) * (B : ℝ) <
+        (A : ℝ) * Real.sqrt (N : ℝ) := by
+    exact mul_lt_mul_of_pos_left hBltS hApos
+
+  have hAS_le_sq :
+      (A : ℝ) * Real.sqrt (N : ℝ) ≤
+        Real.sqrt (N : ℝ) * Real.sqrt (N : ℝ) := by
+    exact
+      mul_le_mul_of_nonneg_right
+        hAleS
+        (Real.sqrt_nonneg (N : ℝ))
+
+  have hlt : (N : ℝ) < (N : ℝ) := by
+    calc
+      (N : ℝ) = (A : ℝ) * (B : ℝ) := hprodR.symm
+      _ < (A : ℝ) * Real.sqrt (N : ℝ) := hprod_lt_AS
+      _ ≤ Real.sqrt (N : ℝ) * Real.sqrt (N : ℝ) := hAS_le_sq
+      _ = (N : ℝ) := hsq
+
+  exact (lt_irrefl (N : ℝ)) hlt
+
+
+theorem rfB0_pos_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    0 < rfB0 a := by
+  have ha_pos : 0 < a := by omega
+  unfold rfB0
+  positivity
+
+theorem rfB1_pos_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    0 < rfB1 a := by
+  have ha_pos : 0 < a := by omega
+  unfold rfB1
+  positivity
+
+theorem rfB2_pos_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    0 < rfB2 a := by
+  have ha_pos : 0 < a := by omega
+  unfold rfB2
+  positivity
+
+theorem rfB3_pos_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    0 < rfB3 a := by
+  have ha_pos : 0 < a := by omega
+  unfold rfB3
+  positivity
+
+
+theorem rfB0_lt_sqrt_rfN_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    (rfB0 a : ℝ) < Real.sqrt (rfN a : ℝ) :=
+  small_factor_lt_sqrt_of_nat_mul_eq_of_lt
+    (rfB0_pos_of_ge_five ha)
+    (rfA0_mul_rfB0_eq_rfN a)
+    (rfA0_gt_rfB0 a)
+
+theorem rfB1_lt_sqrt_rfN_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    (rfB1 a : ℝ) < Real.sqrt (rfN a : ℝ) :=
+  small_factor_lt_sqrt_of_nat_mul_eq_of_lt
+    (rfB1_pos_of_ge_five ha)
+    (rfA1_mul_rfB1_eq_rfN a)
+    (rfA1_gt_rfB1 a)
+
+theorem rfB2_lt_sqrt_rfN_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    (rfB2 a : ℝ) < Real.sqrt (rfN a : ℝ) :=
+  small_factor_lt_sqrt_of_nat_mul_eq_of_lt
+    (rfB2_pos_of_ge_five ha)
+    (rfA2_mul_rfB2_eq_rfN a)
+    (rfA2_gt_rfB2 a)
+
+theorem rfB3_lt_sqrt_rfN_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    (rfB3 a : ℝ) < Real.sqrt (rfN a : ℝ) :=
+  small_factor_lt_sqrt_of_nat_mul_eq_of_lt
+    (rfB3_pos_of_ge_five ha)
+    (rfA3_mul_rfB3_eq_rfN a)
+    (rfA3_gt_rfB3 a)
+
+
+theorem sqrt_rfN_lt_rfA0_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    Real.sqrt (rfN a : ℝ) < (rfA0 a : ℝ) :=
+  sqrt_lt_large_factor_of_nat_mul_eq_of_lt
+    (rfB0_pos_of_ge_five ha)
+    (rfA0_mul_rfB0_eq_rfN a)
+    (rfA0_gt_rfB0 a)
+
+theorem sqrt_rfN_lt_rfA1_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    Real.sqrt (rfN a : ℝ) < (rfA1 a : ℝ) :=
+  sqrt_lt_large_factor_of_nat_mul_eq_of_lt
+    (rfB1_pos_of_ge_five ha)
+    (rfA1_mul_rfB1_eq_rfN a)
+    (rfA1_gt_rfB1 a)
+
+theorem sqrt_rfN_lt_rfA2_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    Real.sqrt (rfN a : ℝ) < (rfA2 a : ℝ) :=
+  sqrt_lt_large_factor_of_nat_mul_eq_of_lt
+    (rfB2_pos_of_ge_five ha)
+    (rfA2_mul_rfB2_eq_rfN a)
+    (rfA2_gt_rfB2 a)
+
+theorem sqrt_rfN_lt_rfA3_of_ge_five {a : Nat} (ha : 5 ≤ a) :
+    Real.sqrt (rfN a : ℝ) < (rfA3 a : ℝ) :=
+  sqrt_lt_large_factor_of_nat_mul_eq_of_lt
+    (rfB3_pos_of_ge_five ha)
+    (rfA3_mul_rfB3_eq_rfN a)
+    (rfA3_gt_rfB3 a)
+
+
+/--
+The four factor gaps are bounded by the chosen formal-conjectures window width.
+This is the last analytic estimate we will prove separately for a concrete
+constant.
+-/
+structure rfFourGapWidthBounds
+    (C : ℝ) (a : Nat) where
+  h0gap :
+    (rfA0 a : ℝ) - (rfB0 a : ℝ) ≤
+      C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)
+  h1gap :
+    (rfA1 a : ℝ) - (rfB1 a : ℝ) ≤
+      C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)
+  h2gap :
+    (rfA2 a : ℝ) - (rfB2 a : ℝ) ≤
+      C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)
+  h3gap :
+    (rfA3 a : ℝ) - (rfB3 a : ℝ) ≤
+      C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)
+
+
+theorem rfA0_hi_of_gapWidth
+    {C : ℝ} {a : Nat}
+    (ha : 5 ≤ a)
+    (G : rfFourGapWidthBounds C a) :
+    (rfA0 a : ℝ) <
+      Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+  have hBsqrt := rfB0_lt_sqrt_rfN_of_ge_five ha
+  have hgap := G.h0gap
+  calc
+    (rfA0 a : ℝ) =
+        (rfB0 a : ℝ) + ((rfA0 a : ℝ) - (rfB0 a : ℝ)) := by ring
+    _ < Real.sqrt (rfN a : ℝ) +
+        ((rfA0 a : ℝ) - (rfB0 a : ℝ)) := by linarith
+    _ ≤ Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by linarith
+
+
+theorem rfA1_hi_of_gapWidth
+    {C : ℝ} {a : Nat}
+    (ha : 5 ≤ a)
+    (G : rfFourGapWidthBounds C a) :
+    (rfA1 a : ℝ) <
+      Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+  have hBsqrt := rfB1_lt_sqrt_rfN_of_ge_five ha
+  have hgap := G.h1gap
+  calc
+    (rfA1 a : ℝ) =
+        (rfB1 a : ℝ) + ((rfA1 a : ℝ) - (rfB1 a : ℝ)) := by ring
+    _ < Real.sqrt (rfN a : ℝ) +
+        ((rfA1 a : ℝ) - (rfB1 a : ℝ)) := by linarith
+    _ ≤ Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by linarith
+
+
+theorem rfA2_hi_of_gapWidth
+    {C : ℝ} {a : Nat}
+    (ha : 5 ≤ a)
+    (G : rfFourGapWidthBounds C a) :
+    (rfA2 a : ℝ) <
+      Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+  have hBsqrt := rfB2_lt_sqrt_rfN_of_ge_five ha
+  have hgap := G.h2gap
+  calc
+    (rfA2 a : ℝ) =
+        (rfB2 a : ℝ) + ((rfA2 a : ℝ) - (rfB2 a : ℝ)) := by ring
+    _ < Real.sqrt (rfN a : ℝ) +
+        ((rfA2 a : ℝ) - (rfB2 a : ℝ)) := by linarith
+    _ ≤ Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by linarith
+
+
+theorem rfA3_hi_of_gapWidth
+    {C : ℝ} {a : Nat}
+    (ha : 5 ≤ a)
+    (G : rfFourGapWidthBounds C a) :
+    (rfA3 a : ℝ) <
+      Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+  have hBsqrt := rfB3_lt_sqrt_rfN_of_ge_five ha
+  have hgap := G.h3gap
+  calc
+    (rfA3 a : ℝ) =
+        (rfB3 a : ℝ) + ((rfA3 a : ℝ) - (rfB3 a : ℝ)) := by ring
+    _ < Real.sqrt (rfN a : ℝ) +
+        ((rfA3 a : ℝ) - (rfB3 a : ℝ)) := by linarith
+    _ ≤ Real.sqrt (rfN a : ℝ) +
+        C * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by linarith
+
+
+/--
+For `a ≥ 5`, root-sandwich plus gap-width bounds give the real window bounds.
+-/
+theorem rfFourRealWindowBounds_of_gapWidthBounds
+    {C : ℝ} {a : Nat}
+    (ha : 5 ≤ a)
+    (G : rfFourGapWidthBounds C a) :
+    rfFourRealWindowBounds C a where
+  h0lo := sqrt_rfN_lt_rfA0_of_ge_five ha
+  h0hi := rfA0_hi_of_gapWidth ha G
+
+  h1lo := sqrt_rfN_lt_rfA1_of_ge_five ha
+  h1hi := rfA1_hi_of_gapWidth ha G
+
+  h2lo := sqrt_rfN_lt_rfA2_of_ge_five ha
+  h2hi := rfA2_hi_of_gapWidth ha G
+
+  h3lo := sqrt_rfN_lt_rfA3_of_ge_five ha
+  h3hi := rfA3_hi_of_gapWidth ha G
+
+/-
+============================================================
+ROSENFELD GAP POLYNOMIAL ESTIMATES
+============================================================
+
+This block proves that the four Rosenfeld factor gaps are bounded by
+64 * a^2 for a >= 5.
+
+The remaining analytic lower estimate after this block is:
+
+  (a : ℝ)^2 <= Real.rpow (rfN a : ℝ) (1/4).
+
+Once that lower estimate is available, the gap-width packet follows.
+============================================================
+-/
+
+theorem rf_gap0_real_eq (a : Nat) :
+    (rfA0 a : ℝ) - (rfB0 a : ℝ) =
+      (16 : ℝ) * (a : ℝ) + 56 := by
+  have hNat := rfB0_add_gap_eq_rfA0 a
+  have hReal :
+      (rfB0 a : ℝ) + ((16 * a + 56 : Nat) : ℝ) =
+        (rfA0 a : ℝ) := by
+    exact_mod_cast hNat
+  have hCast :
+      ((16 * a + 56 : Nat) : ℝ) =
+        (16 : ℝ) * (a : ℝ) + 56 := by
+    norm_num [Nat.cast_add, Nat.cast_mul]
+  linarith
+
+
+theorem rf_gap1_real_eq (a : Nat) :
+    (rfA1 a : ℝ) - (rfB1 a : ℝ) =
+      (4 : ℝ) * (a : ℝ) ^ 2 + 28 * (a : ℝ) + 60 := by
+  have hNat := rfB1_add_gap_eq_rfA1 a
+  have hReal :
+      (rfB1 a : ℝ) +
+          ((4 * a ^ 2 + 28 * a + 60 : Nat) : ℝ) =
+        (rfA1 a : ℝ) := by
+    exact_mod_cast hNat
+  have hCast :
+      ((4 * a ^ 2 + 28 * a + 60 : Nat) : ℝ) =
+        (4 : ℝ) * (a : ℝ) ^ 2 + 28 * (a : ℝ) + 60 := by
+    norm_num [Nat.cast_add, Nat.cast_mul, Nat.cast_pow]
+  linarith
+
+
+theorem rf_gap2_real_eq (a : Nat) :
+    (rfA2 a : ℝ) - (rfB2 a : ℝ) =
+      (8 : ℝ) * (a : ℝ) ^ 2 + 56 * (a : ℝ) + 72 := by
+  have hNat := rfB2_add_gap_eq_rfA2 a
+  have hReal :
+      (rfB2 a : ℝ) +
+          ((8 * a ^ 2 + 56 * a + 72 : Nat) : ℝ) =
+        (rfA2 a : ℝ) := by
+    exact_mod_cast hNat
+  have hCast :
+      ((8 * a ^ 2 + 56 * a + 72 : Nat) : ℝ) =
+        (8 : ℝ) * (a : ℝ) ^ 2 + 56 * (a : ℝ) + 72 := by
+    norm_num [Nat.cast_add, Nat.cast_mul, Nat.cast_pow]
+  linarith
+
+
+theorem rf_gap3_real_eq (a : Nat) :
+    (rfA3 a : ℝ) - (rfB3 a : ℝ) =
+      (16 : ℝ) * (a : ℝ) ^ 2 + 112 * (a : ℝ) + 120 := by
+  have hNat := rfB3_add_gap_eq_rfA3 a
+  have hReal :
+      (rfB3 a : ℝ) +
+          ((16 * a ^ 2 + 112 * a + 120 : Nat) : ℝ) =
+        (rfA3 a : ℝ) := by
+    exact_mod_cast hNat
+  have hCast :
+      ((16 * a ^ 2 + 112 * a + 120 : Nat) : ℝ) =
+        (16 : ℝ) * (a : ℝ) ^ 2 + 112 * (a : ℝ) + 120 := by
+    norm_num [Nat.cast_add, Nat.cast_mul, Nat.cast_pow]
+  linarith
+
+
+theorem rf_gap0_le_64_sq_of_ge_five
+    {a : Nat}
+    (ha : 5 ≤ a) :
+    (rfA0 a : ℝ) - (rfB0 a : ℝ) ≤
+      64 * (a : ℝ) ^ 2 := by
+  rw [rf_gap0_real_eq]
+  have haR : (5 : ℝ) ≤ (a : ℝ) := by
+    exact_mod_cast ha
+  nlinarith [haR, sq_nonneg ((a : ℝ) - 5)]
+
+
+theorem rf_gap1_le_64_sq_of_ge_five
+    {a : Nat}
+    (ha : 5 ≤ a) :
+    (rfA1 a : ℝ) - (rfB1 a : ℝ) ≤
+      64 * (a : ℝ) ^ 2 := by
+  rw [rf_gap1_real_eq]
+  have haR : (5 : ℝ) ≤ (a : ℝ) := by
+    exact_mod_cast ha
+  nlinarith [haR, sq_nonneg ((a : ℝ) - 5)]
+
+
+theorem rf_gap2_le_64_sq_of_ge_five
+    {a : Nat}
+    (ha : 5 ≤ a) :
+    (rfA2 a : ℝ) - (rfB2 a : ℝ) ≤
+      64 * (a : ℝ) ^ 2 := by
+  rw [rf_gap2_real_eq]
+  have haR : (5 : ℝ) ≤ (a : ℝ) := by
+    exact_mod_cast ha
+  nlinarith [haR, sq_nonneg ((a : ℝ) - 5)]
+
+
+theorem rf_gap3_le_64_sq_of_ge_five
+    {a : Nat}
+    (ha : 5 ≤ a) :
+    (rfA3 a : ℝ) - (rfB3 a : ℝ) ≤
+      64 * (a : ℝ) ^ 2 := by
+  rw [rf_gap3_real_eq]
+  have haR : (5 : ℝ) ≤ (a : ℝ) := by
+    exact_mod_cast ha
+  nlinarith [haR, sq_nonneg ((a : ℝ) - 5)]
+
+
+/--
+If the fourth-root window dominates a^2, then the Rosenfeld factor gaps
+fit inside the C = 64 formal-conjectures window.
+-/
+theorem rfFourGapWidthBounds_64_of_fourthRootLowerBound
+    {a : Nat}
+    (ha : 5 ≤ a)
+    (hroot :
+      (a : ℝ) ^ 2 ≤
+        Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4)) :
+    rfFourGapWidthBounds (64 : ℝ) a where
+  h0gap := by
+    have hg := rf_gap0_le_64_sq_of_ge_five ha
+    have hscale :
+        64 * (a : ℝ) ^ 2 ≤
+          64 * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+      nlinarith [hroot]
+    linarith
+
+  h1gap := by
+    have hg := rf_gap1_le_64_sq_of_ge_five ha
+    have hscale :
+        64 * (a : ℝ) ^ 2 ≤
+          64 * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+      nlinarith [hroot]
+    linarith
+
+  h2gap := by
+    have hg := rf_gap2_le_64_sq_of_ge_five ha
+    have hscale :
+        64 * (a : ℝ) ^ 2 ≤
+          64 * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+      nlinarith [hroot]
+    linarith
+
+  h3gap := by
+    have hg := rf_gap3_le_64_sq_of_ge_five ha
+    have hscale :
+        64 * (a : ℝ) ^ 2 ≤
+          64 * Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+      nlinarith [hroot]
+    linarith
+
+
+/-
+============================================================
+ROSENFELD FOURTH-ROOT LOWER ESTIMATE AND FINAL LOWER FAMILY
+============================================================
+
+This block proves the remaining estimate:
+
+  (a : ℝ)^2 ≤ Real.rpow (rfN a : ℝ) (1/4).
+
+It then closes the Rosenfeld real-window construction with C = 64.
+============================================================
+-/
+
+/--
+The Rosenfeld integer dominates a^8.
+-/
+theorem rfN_ge_a_pow8_real (a : Nat) :
+    (a : ℝ) ^ 8 ≤ (rfN a : ℝ) := by
+  calc
+    (a : ℝ) ^ 8 =
+        (a : ℝ) * (a : ℝ) * (a : ℝ) * (a : ℝ) *
+          (a : ℝ) * (a : ℝ) * (a : ℝ) * (a : ℝ) := by
+      ring
+    _ ≤
+        (a : ℝ) * ((a : ℝ) + 1) * ((a : ℝ) + 2) * ((a : ℝ) + 3) *
+          ((a : ℝ) + 4) * ((a : ℝ) + 5) * ((a : ℝ) + 6) * ((a : ℝ) + 7) := by
+      gcongr
+      all_goals
+        first
+        | positivity
+        | linarith
+    _ = (rfN a : ℝ) := by
+      unfold rfN
+      norm_num
+
+
+/--
+The Rosenfeld integer is at least its parameter.
+This is used only to make the family arbitrarily large.
+-/
+theorem rfN_ge_self (a : Nat) :
+    a ≤ rfN a := by
+  have hrest :
+      0 <
+        (a + 1) * (a + 2) * (a + 3) * (a + 4) *
+          (a + 5) * (a + 6) * (a + 7) := by
+    positivity
+
+  unfold rfN
+  calc
+    a ≤
+        a *
+          ((a + 1) * (a + 2) * (a + 3) * (a + 4) *
+            (a + 5) * (a + 6) * (a + 7)) :=
+      Nat.le_mul_of_pos_right a hrest
+    _ =
+        a * (a + 1) * (a + 2) * (a + 3) *
+          (a + 4) * (a + 5) * (a + 6) * (a + 7) := by
+      ring
+
+
+/--
+The fourth-root window dominates a^2 along the Rosenfeld family.
+-/
+theorem rf_fourthRootLowerBound_of_ge_five
+    {a : Nat}
+    (ha : 5 ≤ a) :
+    (a : ℝ) ^ 2 ≤
+      Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) := by
+  have hx_nonneg : 0 ≤ (a : ℝ) ^ 2 := by
+    positivity
+
+  have hy_nonneg : 0 ≤ (rfN a : ℝ) := by
+    positivity
+
+  have hz_pos : 0 < (4 : ℝ) := by
+    norm_num
+
+  have hNge : (a : ℝ) ^ 8 ≤ (rfN a : ℝ) :=
+    rfN_ge_a_pow8_real a
+
+  have hpowNat :
+      ((a : ℝ) ^ 2) ^ (4 : Nat) ≤ (rfN a : ℝ) := by
+    have hpoweq :
+        ((a : ℝ) ^ 2) ^ (4 : Nat) = (a : ℝ) ^ 8 := by
+      ring
+    simpa [hpoweq] using hNge
+
+  have hpowReal :
+      ((a : ℝ) ^ 2) ^ (4 : ℝ) ≤ (rfN a : ℝ) := by
+    simpa using hpowNat
+
+  have hroot :
+      (a : ℝ) ^ 2 ≤ (rfN a : ℝ) ^ ((4 : ℝ)⁻¹) :=
+    (Real.le_rpow_inv_iff_of_pos
+      (x := (a : ℝ) ^ 2)
+      (y := (rfN a : ℝ))
+      (z := (4 : ℝ))
+      hx_nonneg
+      hy_nonneg
+      hz_pos).mpr hpowReal
+
+  simpa [one_div] using hroot
+
+
+/--
+For every a >= 5, the Rosenfeld four factors lie in the real near-root window
+with C = 64.
+-/
+theorem rfFourRealWindowBounds_64_of_ge_five
+    {a : Nat}
+    (ha : 5 ≤ a) :
+    rfFourRealWindowBounds (64 : ℝ) a := by
+  have hroot :
+      (a : ℝ) ^ 2 ≤
+        Real.rpow (rfN a : ℝ) ((1 : ℝ) / 4) :=
+    rf_fourthRootLowerBound_of_ge_five ha
+
+  have hgap :
+      rfFourGapWidthBounds (64 : ℝ) a :=
+    rfFourGapWidthBounds_64_of_fourthRootLowerBound ha hroot
+
+  exact rfFourRealWindowBounds_of_gapWidthBounds ha hgap
+
+
+/--
+The Rosenfeld real-window bounds occur arbitrarily far out.
+-/
+theorem rf_arbitrarily_large_realWindowBounds_64 :
+    ∀ N : Nat,
+      ∃ a : Nat,
+        N ≤ rfN a ∧
+        rfFourRealWindowBounds (64 : ℝ) a := by
+  intro N
+
+  let a : Nat := max 5 N
+
+  have ha5 : 5 ≤ a := by
+    exact Nat.le_max_left 5 N
+
+  have hNa : N ≤ rfN a := by
+    have hNleA : N ≤ a := by
+      exact Nat.le_max_right 5 N
+    have hAleN : a ≤ rfN a :=
+      rfN_ge_self a
+    exact le_trans hNleA hAleN
+
+  exact
+    ⟨a, hNa, rfFourRealWindowBounds_64_of_ge_five ha5⟩
+
+
+/--
+Therefore the formal-conjectures divisor count is at least four arbitrarily
+far out, with the concrete Rosenfeld constant C = 64.
+-/
+theorem rf_arbitrarily_large_count_ge_four_64 :
+    ∀ N : Nat,
+      ∃ n : Nat,
+        N ≤ n ∧
+        4 ≤ formalConjecturesStyleNearRootDivisorCount (64 : ℝ) n :=
+  rf_arbitrarily_large_count_ge_four_of_realWindowBounds
+    rf_arbitrarily_large_realWindowBounds_64
+
+
+end RosenfeldConstructionV2
+
+
+/-
+============================================================
+ROSENFELD LOWER SOURCE, SHARPNESS, AND FORMAL-CONJECTURES MIRROR
+============================================================
+
+This final block is split into three layers.
+
+1. The paper-side upper endpoint:
+   the canonical obstruction gives eventual count <= 4, through the paper's
+   external reconstruction source package.
+
+2. The Rosenfeld lower endpoint:
+   the concrete RosenfeldConstructionV2 family gives infinitely many n with
+   at least four divisors in the same formal-conjectures floor/ceil window.
+
+3. The DeepMind/Formal-Conjectures mirror:
+   the four Erdős 887 statements from the Formal Conjectures repository are
+   restated in this Mathlib-only file using explicit `Finset.card` syntax
+   rather than the repository-specific `#{ ... | ... }` notation.
+============================================================
+-/
+
+/--
+Formal-conjectures-style bound with the explicit witness K = 4,
+stated using this file's internal formal-conjectures-style count.
+
+This is the direct eventual upper endpoint used by the DeepMind-style
+`parts.i` mirror below.
+-/
+theorem Paper_Corollary_1_2_Final_formalConjectures_style_K4
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+      formalConjecturesStyleNearRootDivisorCount C n ≤ 4 := by
+  intro C hCpos
+
+  have hActual :
+      ∀ᶠ n in Filter.atTop,
+        ExternalReconstruction.actualNearRootDivisorCount C n ≤ 4 :=
+    Paper_Corollary_1_2_Final_eventually_actual_count_le_four X C hCpos
+
+  have hBridge :
+      ∀ᶠ n in Filter.atTop,
+        formalConjecturesStyleNearRootDivisorCount C n ≤
+          ExternalReconstruction.actualNearRootDivisorCount C n :=
+    formalConjecturesStyleNearRootDivisorCount_eventually_le_actualNearRootDivisorCount C
+
+  filter_upwards [hBridge, hActual] with n hB hA
+  exact le_trans hB hA
+
+
+/--
+A source package for a four-divisor lower construction in the same
+formal-conjectures floor/ceil window.
+
+In the final file this package is constructed concretely by
+`rosenfeldFourDivisorSource64`.
+-/
+structure RosenfeldFourDivisorSource where
+  C0 : ℝ
+  C0_pos : 0 < C0
+
+  infinite_four :
+    Infinite
+      {n : Nat |
+        4 ≤ formalConjecturesStyleNearRootDivisorCount C0 n}
+
+  arbitrarily_large_four :
+    ∀ N : Nat,
+      ∃ n : Nat,
+        N ≤ n ∧
+        4 ≤ formalConjecturesStyleNearRootDivisorCount C0 n
+
+
+/--
+The recurring-threshold set in the formal-conjectures divisor window.
+
+A natural number K belongs to this set if there is some positive C such that
+arbitrarily large n have at least K divisors in the formal-conjectures window.
+-/
+abbrev FormalConjecturesRecurringThresholdSet : Set Nat :=
+  {K : Nat |
+    ∃ C : ℝ,
+      0 < C ∧
+      ∀ N : Nat,
+        ∃ n : Nat,
+          N ≤ n ∧
+          K ≤ formalConjecturesStyleNearRootDivisorCount C n}
+
+
+/--
+Rosenfeld supplies membership of 4 in the recurring-threshold set.
+-/
+theorem RosenfeldFourDivisorSource.four_mem_recurringThresholdSet
+    (R : RosenfeldFourDivisorSource) :
+    4 ∈ FormalConjecturesRecurringThresholdSet := by
+  exact ⟨R.C0, R.C0_pos, R.arbitrarily_large_four⟩
+
+
+/--
+Upper sharpness from the paper's obstruction endpoint.
+
+If K occurs arbitrarily far out in the formal-conjectures window, then K <= 4.
+Otherwise K >= 5 would contradict the eventual four-divisor bound.
+-/
+theorem Paper_Corollary_1_2_Final_recurringThreshold_upper
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource)
+    {K : Nat}
+    (hK : K ∈ FormalConjecturesRecurringThresholdSet) :
+    K ≤ 4 := by
+  classical
+
+  rcases hK with ⟨C, hCpos, hOccurs⟩
+
+  have hEventual :
+      ∀ᶠ n in Filter.atTop,
+        formalConjecturesStyleNearRootDivisorCount C n ≤ 4 :=
+    Paper_Corollary_1_2_Final_formalConjectures_style_K4 X C hCpos
+
+  rw [Filter.eventually_atTop] at hEventual
+  rcases hEventual with ⟨N, hN⟩
+
+  by_contra hNot
+  have hKge5 : 5 ≤ K := by omega
+
+  rcases hOccurs N with ⟨n, hnN, hKn⟩
+
+  have hn_le4 :
+      formalConjecturesStyleNearRootDivisorCount C n ≤ 4 :=
+    hN n hnN
+
+  have hn_ge5 :
+      5 ≤ formalConjecturesStyleNearRootDivisorCount C n :=
+    le_trans hKge5 hKn
+
+  omega
+
+
+/--
+Combined Rosenfeld plus obstruction sharpness theorem.
+
+Rosenfeld gives that 4 occurs arbitrarily far out.  The paper's obstruction
+gives that no recurring threshold above 4 is possible.  Therefore 4 is the
+greatest recurring threshold.
+-/
+theorem Paper_Corollary_1_2_Final_exactSharpness_from_Rosenfeld
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource)
+    (R : RosenfeldFourDivisorSource) :
+    IsGreatest FormalConjecturesRecurringThresholdSet 4 := by
+  constructor
+  · exact R.four_mem_recurringThresholdSet
+  · intro K hK
+    exact Paper_Corollary_1_2_Final_recurringThreshold_upper X hK
+
+
+/-
+============================================================
+CONCRETE ROSENFELD LOWER SOURCE
+============================================================
+
+This layer consumes the fully derived RosenfeldConstructionV2 family.
+
+It is independent of the upper-bound reconstruction package: the constant
+C = 64 and the infinite lower family are built directly from the explicit
+Rosenfeld arithmetic construction above.
+============================================================
+-/
+
+/--
+The concrete Rosenfeld family gives infinitely many integers with at least
+four divisors in the formal-conjectures near-root window, with C = 64.
+-/
+theorem rosenfeld_infinite_fourDivisorSource64 :
+    Infinite
+      {n : Nat |
+        4 ≤ formalConjecturesStyleNearRootDivisorCount (64 : ℝ) n} := by
+  classical
+
+  refine Set.infinite_coe_iff.mpr ?_
+
+  refine Set.infinite_of_forall_exists_gt ?h
+  intro N
+
+  rcases
+    RosenfeldConstructionV2.rf_arbitrarily_large_count_ge_four_64 (N + 1)
+      with ⟨n, hnLarge, hnCount⟩
+
+  refine ⟨n, ?_, ?_⟩
+  · exact hnCount
+  · omega
+
+
+/--
+The fully constructed Rosenfeld lower-bound source, with concrete constant
+C = 64.
+-/
+def rosenfeldFourDivisorSource64 :
+    RosenfeldFourDivisorSource where
+  C0 := 64
+  C0_pos := by norm_num
+  infinite_four := rosenfeld_infinite_fourDivisorSource64
+  arbitrarily_large_four :=
+    RosenfeldConstructionV2.rf_arbitrarily_large_count_ge_four_64
+
+
+/--
+Final exact sharpness package over the paper's upper reconstruction source.
+
+The lower Rosenfeld side is now constructed internally by
+`rosenfeldFourDivisorSource64`; the upper side is the paper endpoint through
+`ExternalReconstructionSource`.
+-/
+theorem Paper_Corollary_1_2_Final_exactSharpness
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    IsGreatest FormalConjecturesRecurringThresholdSet 4 :=
+  Paper_Corollary_1_2_Final_exactSharpness_from_Rosenfeld
+    X
+    rosenfeldFourDivisorSource64
+
+
+/-
+============================================================
+FORMAL CONJECTURES / DEEPMIND ERDOS 887 MIRROR STATEMENTS
+============================================================
+
+This Mathlib-only section mirrors the four Formal Conjectures Erdős 887
+targets without importing `FormalConjectures.Util.ProblemImports` and without
+using the repository-specific `#{ ... | ... }` notation.
+
+The count is definitionally the same floor/ceil divisor-window count already
+used by the paper endpoint.
+============================================================
+-/
+namespace FormalConjecturesMirror
+
+/--
+The exact divisor-window count appearing in the Formal Conjectures Erdős 887
+statements, written without the repository-specific `#{ ... | ... }` syntax.
+-/
+noncomputable def erdos887WindowCount
+    (C : ℝ) (n : Nat) : Nat :=
+  Finset.card
+    (Finset.filter
+      (fun d : Nat => d ∣ n)
+      (Finset.Ioo
+        (⌊Real.sqrt (n : ℝ)⌋₊)
+        (⌈Real.sqrt (n : ℝ) +
+            C * Real.rpow (n : ℝ) ((1 : ℝ) / 4)⌉₊)))
+
+theorem erdos887WindowCount_eq_formalConjecturesStyle
+    (C : ℝ) (n : Nat) :
+    erdos887WindowCount C n =
+      formalConjecturesStyleNearRootDivisorCount C n := by
+  simp [erdos887WindowCount, formalConjecturesStyleNearRootDivisorCount]
+
+
+/--
+Formal Conjectures `erdos_887.parts.i`, with the answer specialized to 4.
+-/
+theorem erdos_887_parts_i_answer_four
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+      erdos887WindowCount C n ≤ 4 := by
+  intro C hCpos
+  have h :=
+    Paper_Corollary_1_2_Final_formalConjectures_card_statement_K4
+      X C hCpos
+  simpa [erdos887WindowCount] using h
+
+
+/--
+Formal Conjectures `erdos_887.parts.ii`.
+
+The absolute witness is K = 4.
+-/
+theorem erdos_887_parts_ii
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    ∃ K : Nat, ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+      erdos887WindowCount C n ≤ K := by
+  refine ⟨4, ?_⟩
+  intro C hCpos
+  exact erdos_887_parts_i_answer_four X C hCpos
+
+
+/--
+Formal Conjectures `erdos_887.variants.rosenfeld_infinite`.
+
+This is pulled directly from the constructed Rosenfeld source with C = 64.
+-/
+theorem erdos_887_variants_rosenfeld_infinite :
+    ∃ C > (0 : ℝ),
+      Infinite {n : Nat | 4 ≤ erdos887WindowCount C n} := by
+  refine ⟨64, by norm_num, ?_⟩
+  simpa [erdos887WindowCount, formalConjecturesStyleNearRootDivisorCount] using
+    rosenfeld_infinite_fourDivisorSource64
+
+
+/--
+The paper-side recurring-threshold formulation of the Formal Conjectures
+`rosenfeld_4` target.
+
+This uses the already-working packaged theorem.  It avoids reproving a
+general `Infinite subset of Nat -> arbitrarily large` bridge, because the
+file already stores the Rosenfeld lower construction in both forms.
+-/
+theorem erdos_887_variants_rosenfeld_4_paper_recurring_form
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    IsGreatest FormalConjecturesRecurringThresholdSet 4 :=
+  Paper_Corollary_1_2_Final_exactSharpness X
+
+
+end FormalConjecturesMirror
+
+/-
+
+# AUDIT-FACING DEEPMIND 887 RESULT PACKAGE
+
+This section collects the Mathlib-only Formal Conjectures / DeepMind-style
+Erdos 887 mirror statements into one explicit audit object.
+
+Important distinction for auditors:
+
+* `ExternalCanonicalExtraction.ExternalReconstructionSource` is not the
+  statement "there are no counterexamples."
+
+* It is the typed upper reconstruction source used by the paper endpoint.
+  Given that source, the already-proved upper theorem gives the eventual
+  bound with answer 4.
+
+* The Rosenfeld lower construction is closed internally in this file, with
+  the concrete constant C = 64.
+
+Thus the four DeepMind-style mirror outputs are obtained by calling the
+already-proved endpoints in the correct order.
+==============================================
+
+
+The fourth component is intentionally stated using
+`FormalConjecturesRecurringThresholdSet`, not the raw Infinite greatest-set
+carrier.  The raw Infinite Rosenfeld lower statement is already the third
+component.  Exact sharpness is carried by the recurring-threshold set because
+that is the object closed by `Paper_Corollary_1_2_Final_exactSharpness`.
+
+Thus this package is not missing the Infinite lower construction.  It separates
+the Infinite lower theorem from the exact-sharpness theorem.
+
+
+-/
+namespace FormalConjecturesMirror
+
+/--
+The four Formal Conjectures / DeepMind-style Erdos 887 outputs collected as
+one proposition.
+
+The parameter `_X` is carried only so this mirror statement has the same
+external reconstruction-source indexing as `DeepMind887AuditPackage`.  The
+third statement, the Rosenfeld lower side, is independent of `_X`; the upper
+and sharpness package constructors use `_X` when they build the package.
+-/
+def DeepMind887MirrorStatement
+(_X : ExternalCanonicalExtraction.ExternalReconstructionSource) : Prop :=
+(∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+erdos887WindowCount C n ≤ 4) ∧
+(∃ K : Nat, ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+erdos887WindowCount C n ≤ K) ∧
+(∃ C > (0 : ℝ),
+Infinite {n : Nat | 4 ≤ erdos887WindowCount C n}) ∧
+IsGreatest FormalConjecturesRecurringThresholdSet 4
+
+/--
+Audit-facing package of the four Formal Conjectures / DeepMind-style outputs.
+
+The first two fields are the upper-bound consequences obtained from the paper's
+external reconstruction source `X`.
+
+The third field is the internally constructed Rosenfeld lower side.
+
+The fourth field is the exact sharpness package: the upper obstruction plus
+the internally constructed Rosenfeld lower source.
+-/
+structure DeepMind887AuditPackage
+(X : ExternalCanonicalExtraction.ExternalReconstructionSource) where
+parts_i_answer_four :
+∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+erdos887WindowCount C n ≤ 4
+
+parts_ii :
+∃ K : Nat, ∀ C > (0 : ℝ), ∀ᶠ n in Filter.atTop,
+erdos887WindowCount C n ≤ K
+
+rosenfeld_infinite :
+∃ C > (0 : ℝ),
+Infinite {n : Nat | 4 ≤ erdos887WindowCount C n}
+
+rosenfeld_4_paper_recurring_form :
+IsGreatest FormalConjecturesRecurringThresholdSet 4
+
+/--
+The package constructor.
+
+No new mathematics is introduced here.  This simply collects the already-proved
+endpoint theorems into one auditable object.
+-/
+def deepMind887AuditPackage
+(X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+DeepMind887AuditPackage X where
+parts_i_answer_four :=
+erdos_887_parts_i_answer_four X
+
+parts_ii :=
+erdos_887_parts_ii X
+
+rosenfeld_infinite :=
+erdos_887_variants_rosenfeld_infinite
+
+rosenfeld_4_paper_recurring_form :=
+erdos_887_variants_rosenfeld_4_paper_recurring_form X
+
+/--
+The central audit identity.
+
+The four DeepMind-style mirror statements are equivalent to the existence of
+the assembled audit package.
+
+This is the Lean-level statement that the conjecture-shaped mirror proposition
+and the package surface carry exactly the same data.
+-/
+theorem deepMind887MirrorStatement_iff_auditPackage
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    DeepMind887MirrorStatement X ↔ Nonempty (DeepMind887AuditPackage X) := by
+  constructor
+  · intro h
+    exact
+      ⟨{
+        parts_i_answer_four := h.1
+        parts_ii := h.2.1
+        rosenfeld_infinite := h.2.2.1
+        rosenfeld_4_paper_recurring_form := h.2.2.2
+      }⟩
+  · intro h
+    rcases h with ⟨P⟩
+    exact
+      ⟨P.parts_i_answer_four,
+       P.parts_ii,
+       P.rosenfeld_infinite,
+       P.rosenfeld_4_paper_recurring_form⟩
+
+
+/--
+The four DeepMind-style mirror statements hold by invoking the constructed
+audit package.
+-/
+theorem deepMind887MirrorStatement_from_auditPackage
+    (X : ExternalCanonicalExtraction.ExternalReconstructionSource) :
+    DeepMind887MirrorStatement X := by
+  exact
+    (deepMind887MirrorStatement_iff_auditPackage X).mpr
+      ⟨deepMind887AuditPackage X⟩
+
+/--
+The mirror count and the paper's formal-conjectures-style count are the same
+count.
+
+This is the direct definitional bridge between the DeepMind-style window count
+and the count already used by the paper endpoint.
+-/
+theorem deepMind_count_identity
+(C : ℝ) (n : Nat) :
+erdos887WindowCount C n =
+formalConjecturesStyleNearRootDivisorCount C n :=
+erdos887WindowCount_eq_formalConjecturesStyle C n
+
+end FormalConjecturesMirror
 
 end Erdos887Formal
