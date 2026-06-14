@@ -6,6 +6,7 @@ This repository contains the Lean 4 companion formalization for Jarek Koch's man
 
 Paper DOI: `10.5281/zenodo.20651083`
 All-versions paper DOI: `10.5281/zenodo.20651082`
+Archived Lean release DOI, v1.1.0: `10.5281/zenodo.20693472`
 Archived Lean release DOI, v1.0.0: `10.5281/zenodo.20586442`
 All-versions Lean DOI: `10.5281/zenodo.20586441`
 Current GitHub release: `v1.1.0`
@@ -156,6 +157,12 @@ All manuscript versions:
 https://doi.org/10.5281/zenodo.20651082
 ```
 
+Archived Lean release, v1.1.0:
+
+```text
+https://doi.org/10.5281/zenodo.20693472
+```
+
 Archived Lean release, v1.0.0:
 
 ```text
@@ -176,11 +183,19 @@ https://github.com/jarekkoch-hub/erdos887-lean
 
 ## Citation
 
+For the manuscript, cite:
+
 ```text
 Koch, J. (2026). The Eventual Four-Divisor Bound for Erdős Problem 887: Root-band Reconstruction and a K5 Interval-Overload Obstruction. Zenodo. https://doi.org/10.5281/zenodo.20651083
 ```
 
-For the Lean formalization archive, cite the relevant Zenodo Lean release DOI. The all-versions Lean DOI is:
+For the Lean formalization, cite the relevant archived Lean release. The current archived Lean release is:
+
+```text
+Koch, J. (2026). Lean 4 companion formalization for Erdős Problem 887. Zenodo. https://doi.org/10.5281/zenodo.20693472
+```
+
+The all-versions Lean DOI is:
 
 ```text
 https://doi.org/10.5281/zenodo.20586441
