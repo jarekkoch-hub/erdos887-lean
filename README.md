@@ -1,222 +1,99 @@
-# Erdős Problem 887 Lean formalization
+# Erdős Problem 887: Lean formalization rewrite
 
-This repository contains the Lean 4 companion formalization for Jarek Koch's manuscript:
+> **Status: unfinished research checkpoint**  
+> **Branch:** `formalization-rewrite`  
+> **Current source:** [`Formalization3.lean`](Formalization3.lean)  
+> **Snapshot date:** 16 October 2026
+
+This branch records the current architectural rewrite of the Lean 4 companion formalization for Jarek Koch's manuscript:
 
 **The Eventual Four-Divisor Bound for Erdős Problem 887: Root-band Reconstruction and a K5 Interval-Overload Obstruction**
 
-Paper DOI: `10.5281/zenodo.20651083`
-All-versions paper DOI: `10.5281/zenodo.20651082`
-Archived Lean release DOI, v1.1.0: `10.5281/zenodo.20693472`
-Archived Lean release DOI, v1.0.0: `10.5281/zenodo.20586442`
-All-versions Lean DOI: `10.5281/zenodo.20586441`
-Current GitHub release: `v1.1.0`
-
-## Project purpose
-
-The manuscript proves an eventual four-divisor bound for Erdős Problem 887. For each fixed constant `C > 0`, it proves that there is a threshold `N(C)` such that the interval
+The manuscript presents a proposed proof that, for each fixed `C > 0`, the interval
 
 ```text
 (sqrt(n), sqrt(n) + C n^(1/4))
 ```
 
-contains at most four divisors of `n` for all `n >= N(C)`.
+contains at most four divisors of `n` for all sufficiently large `n`.
 
-This repository contains the companion Lean 4 formalization. The paper is self-contained as a mathematical manuscript. The Lean development is a separate machine-checkable presentation of the same public theorem route.
+**The end-to-end Lean formalization remains incomplete. This snapshot does not announce completed formal verification of the proposed result.**
 
-The formalization mirrors the paper's theorem-source architecture. It includes the external reconstruction route, the bounded full `K5` survivor funnel, the canonical interval-overload construction, the normalized legal `K5` survivor surface, and the internal obstruction closure.
+## Current development
 
-## v1.1.0 audit-surface update
+The current rewrite is approximately 42,000 source lines, including executable mathematics, architectural metadata, guidance systems, and scaffolding for unfinished stages. The line count describes the size of the development, not a measure of proof completion.
 
-Release `v1.1.0` adds audit-surface hardening and a Formal Conjectures / DeepMind-facing mirror layer.
+The manuscript mirrors the formalization's original architecture. This branch contains the subsequent rewrite, with more explicit control over mathematical states, construction ownership, and retained-state handoffs.
 
-The core proof route remains the same. The update makes the theorem-source architecture easier to inspect by adding explicit Lean declarations showing that `ExternalReconstructionSource` is exactly the pair of its two component source packages:
+The source tracks the external reconstruction, canonical interval-overload construction, and internal obstruction routes. Later sections include scaffolding and unresolved mathematical producers. The source's opening guidance and closing construction-status ledger describe how the development is organized and where work remains.
 
-```lean
-Erdos887Formal.ExternalCanonicalExtraction.CanonicalExtractionSource
-Erdos887Formal.ExternalCanonicalExtraction.RootBandSurvivorReconstructionSource
-```
+## What changed
 
-The release also adds an eta theorem for the external reconstruction wrapper, a floor/ceil divisor-window count matching the Formal Conjectures style, the eventual answer-4 theorem surface, the existential `K = 4` bound, the Rosenfeld lower construction, and an audit package collecting the DeepMind-style mirror outputs.
+The rewrite makes the execution architecture explicit through:
 
-## Main files
+- Nested containers, layers, proof boxes, and route compartments.
+- Designated public state-transformation theorems with incoming state, outgoing state, and effect descriptions.
+- Typed input/output roles for construction, retained reads, source inputs, coherence, permissions, and distant dependencies.
+- Direct handoffs that preserve the selected witness and shared objects across constructions.
+- Separate treatment of exact finite states, sequence states, subsequences, and normalized growth states.
+- Explicit distinctions between closed routes, local diagnostics, and source-dependent intermediate compositions.
+- A ledger identifying the remaining construction obligations.
 
-* `Erdos887/Formalization.lean`
-  Main Lean formalization.
+## Development context and current limitation
 
-* `Erdos887.lean`
-  Root import file.
+I have developed this project independently with LLM assistance. Progress on the current strategy has stalled at the practical memory and structural limits of the LLM tools I have used.
 
-* `Main.lean`
-  Project entry file.
+Continuing the proof requires a coherent picture of nested mathematical states, branch history, provenance, and dependencies across distant stages. In my sessions, models lose their position within that nesting, follow shared internal references in circles, or confuse the boundaries between states.
 
-* `Lean_Audit.tsv`
-  Human-readable audit map for the formalization. GitHub renders this file as a table. It lists the main formal packages, fields, constructors, theorem surfaces, and paper-section anchors so readers can inspect the structure of the Lean development without spreadsheet software.
+Reconstructing the architecture for each fresh session now consumes so much usable context that the session can reach its practical limit before meaningful progress resumes. Extensive guidance embedded in the Lean source has not removed this bottleneck. Maintaining continuity between sessions has remained a manual responsibility.
 
-* `lakefile.toml`
-  Lake project configuration.
+This snapshot is published as a dated record of the work, its current construction frontier, and the technological limitations encountered with this strategy.
 
-* `lean-toolchain`
-  Lean toolchain version.
+## Files and historical material
 
-## Checking the formalization
+| File | Role |
+| --- | --- |
+| `Formalization3.lean` | Current unfinished rewrite checkpoint. |
+| `Erdos887/Formalization.lean` | Earlier public formalization, retained for historical comparison. |
+| `Erdos887.lean` and `Main.lean` | Project entry files inherited from the earlier development. |
+| `Lean_Audit.tsv` | Audit map for the earlier public formalization; it is not an updated map of this rewrite. |
+| `lakefile.toml`, `lake-manifest.json`, and `lean-toolchain` | Existing project configuration and dependency information. |
+| `CITATION.cff` | Citation metadata inherited from the earlier public development. |
 
-From the repository root, run:
+## Build and verification status
 
-```bash
-lake build
-```
-
-The repository root is the directory containing `lakefile.toml` and `lean-toolchain`.
-
-The `v1.1.0` update was checked locally with:
+The previous README records a successful local build for **v1.1.0**:
 
 ```text
 lake build
 Build completed successfully (7663 jobs).
 ```
 
-## Lean version
+That is a historical build record for the earlier release. This README does not report a new build result for `Formalization3.lean`.
 
-The Lean version is specified in:
+A build of the inherited project targets should only be described as checking the rewrite when `Formalization3.lean` is explicitly included in that build. The rewrite's build coverage and end-to-end theorem completion are separate matters.
 
-```text
-lean-toolchain
-```
+For the earlier endpoint declarations, audit-surface update, mirror layer, and original build instructions, consult the [v1.1.0 README](https://github.com/jarekkoch-hub/erdos887-lean/blob/v1.1.0/README.md).
 
-## Main formal endpoints
+## Manuscript and archived releases
 
-The principal public endpoint is:
+- [Manuscript preprint](https://doi.org/10.5281/zenodo.20651083)
+- [All manuscript versions](https://doi.org/10.5281/zenodo.20651082)
+- [Archived Lean release v1.1.0](https://doi.org/10.5281/zenodo.20693472)
+- [Archived Lean release v1.0.0](https://doi.org/10.5281/zenodo.20586442)
+- [All archived Lean versions](https://doi.org/10.5281/zenodo.20586441)
+- [GitHub release v1.1.0](https://github.com/jarekkoch-hub/erdos887-lean/releases/tag/v1.1.0)
 
-```lean
-Erdos887Formal.Paper_Corollary_1_2_Final
-```
-
-Related theorem-surface declarations include:
-
-```lean
-Erdos887Formal.Paper_Theorem_1_1_Final
-Erdos887Formal.ExternalCanonicalExtraction.ExternalReconstructionSource
-Erdos887Formal.ExternalCanonicalExtraction.externalReconstructionSource_nonempty_iff_components
-Erdos887Formal.ExternalCanonicalExtraction.externalReconstructionSource_eta
-Erdos887Formal.ExternalCanonicalExtraction.canonicalOverloadReconstruction_of_externalExtraction
-```
-
-The `v1.1.0` Formal Conjectures / DeepMind-facing mirror layer includes:
-
-```lean
-Erdos887Formal.FormalConjecturesMirror.erdos887WindowCount
-Erdos887Formal.FormalConjecturesMirror.erdos887WindowCount_eq_formalConjecturesStyle
-Erdos887Formal.FormalConjecturesMirror.erdos_887_parts_i_answer_four
-Erdos887Formal.FormalConjecturesMirror.erdos_887_parts_ii
-Erdos887Formal.FormalConjecturesMirror.erdos_887_variants_rosenfeld_infinite
-Erdos887Formal.FormalConjecturesMirror.erdos_887_variants_rosenfeld_4_paper_recurring_form
-Erdos887Formal.FormalConjecturesMirror.DeepMind887AuditPackage
-Erdos887Formal.FormalConjecturesMirror.deepMind887MirrorStatement_from_auditPackage
-Erdos887Formal.FormalConjecturesMirror.deepMind_count_identity
-```
-
-## Human audit map
-
-The file
-
-```text
-Lean_Audit.tsv
-```
-
-is provided as a navigation aid for reviewers and readers. It is a plain tab-separated table, so it can be viewed directly on GitHub, opened in spreadsheet software, or inspected as text.
-
-The audit map is intended to show what is packaged inside the formalization: structures, theorem-source packages, retained-state records, fields, constructors, theorem surfaces, and their corresponding paper-section anchors. It is not a separate proof and does not replace Lean checking. The authoritative formal artifact remains:
-
-```text
-Erdos887/Formalization.lean
-```
-
-A suggested audit path is:
-
-```text
-1. Build the project with lake build.
-2. Inspect the public endpoint declarations.
-3. Inspect ExternalReconstructionSource and its two component packages.
-4. Use Lean_Audit.tsv to locate the major theorem-source packages and handoff records.
-5. Compare those packages with the corresponding sections of the manuscript.
-6. Follow the final route from external reconstruction to the canonical interval-overload obstruction.
-7. For the Formal Conjectures comparison, inspect the FormalConjecturesMirror namespace.
-```
-
-## Artifact links
-
-Manuscript preprint:
-
-```text
-https://doi.org/10.5281/zenodo.20651083
-```
-
-All manuscript versions:
-
-```text
-https://doi.org/10.5281/zenodo.20651082
-```
-
-Archived Lean release, v1.1.0:
-
-```text
-https://doi.org/10.5281/zenodo.20693472
-```
-
-Archived Lean release, v1.0.0:
-
-```text
-https://doi.org/10.5281/zenodo.20586442
-```
-
-All Lean release versions:
-
-```text
-https://doi.org/10.5281/zenodo.20586441
-```
-
-GitHub repository:
-
-```text
-https://github.com/jarekkoch-hub/erdos887-lean
-```
+The version-specific Lean DOIs above identify the earlier archived releases. They should not be used as identifiers for the current rewrite checkpoint.
 
 ## Citation
 
-For the manuscript, cite:
+For the manuscript:
 
 ```text
-Koch, J. (2026). The Eventual Four-Divisor Bound for Erdős Problem 887: Root-band Reconstruction and a K5 Interval-Overload Obstruction. Zenodo. https://doi.org/10.5281/zenodo.20651083
+Koch, J. (2026). The Eventual Four-Divisor Bound for Erdős Problem 887:
+Root-band Reconstruction and a K5 Interval-Overload Obstruction.
+Zenodo. https://doi.org/10.5281/zenodo.20651083
 ```
 
-For the Lean formalization, cite the relevant archived Lean release. The current archived Lean release is:
-
-```text
-Koch, J. (2026). Lean 4 companion formalization for Erdős Problem 887. Zenodo. https://doi.org/10.5281/zenodo.20693472
-```
-
-The all-versions Lean DOI is:
-
-```text
-https://doi.org/10.5281/zenodo.20586441
-```
-
-## Notes for readers
-
-This repository is intended as an audit companion to the manuscript. The Lean file is organized to mirror the paper's reduction chain rather than to serve as a minimal mathlib-style formalization.
-
-The central route is:
-
-```text
-external infinite five-divisor violations
-→ root-band survivor reconstruction
-→ bounded full K5 survivor funnel
-→ canonical interval-overload datum
-→ normalized legal K5 survivor surface
-→ internal obstruction
-→ contradiction
-```
-
-The manuscript explains the mathematical meaning of the source components and retained-state handoffs. The Lean file provides the corresponding machine-checkable theorem surface. The audit map gives readers a compact way to navigate the formal package structure while keeping the Lean file itself as the source of truth.
-
-The `v1.1.0` additions are audit-facing. They do not replace the existing proof route. Their purpose is to make the wrapper structure explicit, expose the component-package decomposition, and provide a direct Formal Conjectures / DeepMind-style comparison layer.
+For an earlier archived formalization, cite the DOI of the specific release used. For this research checkpoint, identify the repository, commit or release tag, `Formalization3.lean`, and snapshot date so readers can locate the exact version.
